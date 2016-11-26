@@ -1,0 +1,24 @@
+{
+  "name": "progetto_se2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Gabri95/ProgettoSE2.git"
+  },
+  "author": "Gabriele Cesa",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Gabri95/ProgettoSE2/issues"
+  },
+  "homepage": "https://github.com/Gabri95/ProgettoSE2#readme",
+  "dependencies": {
+    "bind": "^0.1.7",
+    "express": "^4.14.0",
+    "util": "^0.10.3"
+  }
+}

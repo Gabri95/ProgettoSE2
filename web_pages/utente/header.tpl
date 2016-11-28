@@ -6,15 +6,15 @@
 
 
         <!-- Menu -->
-        <div class="col-md-1 header" style="padding: 5px">
-            <a class="navbar-brand header" style="padding-left:0; padding-right:0">
+        <div class="col-xs-1 header" style="padding: 5px">
+            <a class="navbar-brand header" style="padding-left:0; padding-right:0; float: none">
 					<span class="glyphicon glyphicon-menu-hamburger" style="font-size:1.5em; text-align: center;">
             </a>
         </div>
         
         <!-- LogOut -->
-        <div class="col-md-1 col-md-offset-10 header" style="padding: 5px">
-            <a href="/logout" class="navbar-brand header" style="padding-left:0; padding-right:0;">
+        <div class="col-xs-1 col-xs-offset-10 header" style="padding: 5px">
+            <a href="/logout" class="navbar-brand header" style="padding-left:0; padding-right:0; float: none">
 					<span class="glyphicon glyphicon-log-out" style="font-size:1.5em; text-align: center;">
             </a>
         </div>

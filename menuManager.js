@@ -29,7 +29,7 @@ function getDailyMenu(date){
 	
 	var m = null;
 	
-	for(var i=0; i<menu.length(); i++){
+	for(var i=0; i<menu.length; i++){
 		if(menu[i].date.toDateString() == date.toDateString()){
 			m = menu[i];
 			break;

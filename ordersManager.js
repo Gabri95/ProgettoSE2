@@ -43,6 +43,13 @@ function followingDay(day, n){
 	return date;
 }
 
+function previeusDay(day, n){
+	
+	var date = new Date(day);
+	date.setDate(day.getDate()-n);
+	return date;
+}
+
 function getNextDays(user_id, today, n){
 	
 	var days = [];
@@ -51,6 +58,7 @@ function getNextDays(user_id, today, n){
 		name: days_name[today.getDay()],
 		day: today.getDate(),
 		month: today.getMonth()+1,
+		year: today.getYear(),
 		class: (getOrders(user_id, today) == null) ? "btn-default" : "btn-success"
 	});
 	
@@ -61,6 +69,7 @@ function getNextDays(user_id, today, n){
 			name: days_name[date.getDay()],
 			day: date.getDate(),
 			month: date.getMonth()+1,
+			year: date.getYear(),
 			class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
 		});
 		
@@ -69,5 +78,51 @@ function getNextDays(user_id, today, n){
 	return days;
 }
 
+
+
+function getNearDays(user_id, today, n){
+	
+	var days = [];
+	
+	
+	
+	for(var i=n; i>0; i--){
+		var date = previeusDay(today, i);
+		
+		days.push({
+			name: days_name[date.getDay()],
+			day: date.getDate(),
+			month: date.getMonth()+1,
+			year: date.getYear(),
+			class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
+		});
+	}
+	
+	days.push({
+		name: days_name[today.getDay()],
+		day: today.getDate(),
+		month: today.getMonth()+1,
+		year: today.getYear(),
+		class: (getOrders(user_id, today) == null) ? "btn-default" : "btn-success"
+	});
+	
+	for(var i=1; i<= n; i++){
+		var date = followingDay(today, i);
+		
+		days.push({
+			name: days_name[date.getDay()],
+			day: date.getDate(),
+			month: date.getMonth()+1,
+			year: date.getYear(),
+			class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
+		});
+		
+	}
+	
+	return days;
+}
+
+
+exports.getNearDays = getNearDays;
 exports.getNextDays = getNextDays;
 exports.getOrders = getOrders;

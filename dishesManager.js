@@ -34,6 +34,38 @@ function getDish(id){
 	return d;
 }
 
+function getOrderedDishes(order){
+	var dishes = {
+		first: getDish(order.first_id),
+		second: getDish(order.second_id),
+		side: getDish(order.side_id)
+	};
+	
+	return dishes;
+}
+
+function getMenuDishes(menu){
+	var dishes = {
+		first: [],
+		second: [],
+		side: []
+	};
+	
+	for(var i=0; i<menu.firstDishes.length; i++){
+		dishes.first.push(getDish(menu.firstDishes[i]));
+	}
+	for(var i=0; i<menu.secondDishes.length; i++){
+		dishes.second.push(getDish(menu.secondDishes[i]));
+	}
+	for(var i=0; i<menu.sideDishes.length; i++){
+		dishes.side.push(getDish(menu.sideDishes[i]));
+	}
+	
+	return dishes;
+}
+
 
 exports.getDish = getDish;
+exports.getMenuDishes = getMenuDishes;
+exports.getOrderedDishes = getOrderedDishes;
 

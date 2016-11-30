@@ -6,7 +6,9 @@ function Dish(id, name, description, photo, ingredients, recipe){
 	this.photo = photo;
 	this.ingredients = ingredients;
 	this.recipe = recipe;
-};
+}
+
+
 
 var dishes = [
 	new Dish(0, "pasta al pomodoro", "piatto tipico italiano", "photos/pasta_pomodoro.jpg", ["pasta", "sugo di pomodoro"], ["prepara la pasta", "prepara il sugo di pomodoro", "metti la pasta sul piatto insieme al sugo"]),
@@ -20,13 +22,15 @@ var dishes = [
 
 
 
-
+function copy(d){
+    return new Dish(d.id, d.name, d.description, d.photo, d.ingredients, d.recipe);
+}
 
 function getDish(id){
 	var d = null;
 	for(var i =0; i<dishes.length; i++){
 		if(dishes[i].id == id){
-			d = dishes[i];
+			d = copy(dishes[i]);
 			break;
 		}
 	}
@@ -46,20 +50,56 @@ function getOrderedDishes(order){
 
 function getMenuDishes(menu){
 	var dishes = {
-		first: [],
-		second: [],
-		side: []
+		firsts: [],
+		seconds: [],
+		sides: []
 	};
 	
 	for(var i=0; i<menu.firstDishes.length; i++){
-		dishes.first.push(getDish(menu.firstDishes[i]));
+		dishes.firsts.push(getDish(menu.firstDishes[i]));
 	}
 	for(var i=0; i<menu.secondDishes.length; i++){
-		dishes.second.push(getDish(menu.secondDishes[i]));
+		dishes.seconds.push(getDish(menu.secondDishes[i]));
 	}
 	for(var i=0; i<menu.sideDishes.length; i++){
-		dishes.side.push(getDish(menu.sideDishes[i]));
+		dishes.sides.push(getDish(menu.sideDishes[i]));
 	}
+	
+	return dishes;
+}
+
+function getMenuOrderedDishes(menu, order){
+	var dishes = {
+        first_ordered: '',
+        second_ordered: '',
+        side_ordered: '',
+		firsts: [],
+		seconds: [],
+		sides: []
+	};
+	
+    if(order != null){
+        dishes.first_ordered = order.first_id;
+        dishes.second_ordered = order.second_id;
+        dishes.side_ordered = order.side_id;
+    }
+    
+	for(var i=0; i<menu.firstDishes.length; i++){
+        var dish = getDish(menu.firstDishes[i]);
+        dish["ordered"] = (order != null && order.first_id == dish.id);
+		dishes.firsts.push(dish);
+	}
+	for(var i=0; i<menu.secondDishes.length; i++){
+		var dish = getDish(menu.secondDishes[i]);
+        dish["ordered"] = (order != null && order.second_id == dish.id);
+		dishes.seconds.push(dish);
+	}
+	for(var i=0; i<menu.sideDishes.length; i++){
+		var dish = getDish(menu.sideDishes[i]);
+        dish["ordered"] = (order != null && order.side_id == dish.id);
+		dishes.sides.push(dish);
+	}
+    
 	
 	return dishes;
 }
@@ -68,4 +108,5 @@ function getMenuDishes(menu){
 exports.getDish = getDish;
 exports.getMenuDishes = getMenuDishes;
 exports.getOrderedDishes = getOrderedDishes;
+exports.getMenuOrderedDishes = getMenuOrderedDishes;
 

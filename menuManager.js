@@ -1,47 +1,115 @@
+//connect DB
+var pg = require('pg');
+var dishesManager = require('./dishesManager.js');
 
-function DailyMenu(date, firstDishes, secondDishes, sideDishes){
+
+function Menu(date, firsts, seconds, sides, a_firsts, a_seconds, a_sides){
 	this.date = date;
-	this.firstDishes = firstDishes;
-	this.secondDishes = secondDishes;
-	this.sideDishes = sideDishes;
+    this.firsts = firsts;
+    this.seconds = seconds;
+    this.sides = sides;
+    this.a_firsts = a_firsts;
+    this.a_seconds = a_seconds;
+    this.a_sides = a_sides;
 };
 
-var menu = [
-	
-	new DailyMenu(new Date("November 28, 2016"), [0, 1, 2], [3, 4], [5, 6]),
-	new DailyMenu(new Date("November 29, 2016"), [0, 2], [4], [5]),
-	new DailyMenu(new Date("November 30, 2016"), [2], [3, 4], [6]),
-	new DailyMenu(new Date("December 1, 2016"), [0], [4], [5, 6]),
-	new DailyMenu(new Date("December 2, 2016"), [0, 2], [4], [5]),
-	new DailyMenu(new Date("December 3, 2016"), [1, 2], [3], [6]),
-	new DailyMenu(new Date("December 4, 2016"), [1, 2], [3], [5, 6]),
-	new DailyMenu(new Date("December 5, 2016"), [0, 2], [3, 4], [6]),
-	new DailyMenu(new Date("December 6, 2016"), [0, 1], [3, 4], [5]),
-	new DailyMenu(new Date("December 7, 2016"), [0, 1], [4], [5, 6]),
-	new DailyMenu(new Date("December 8, 2016"), [0, 2], [3], [5]),
-	
-];
 
 
+function getMenu(date, callback){
+    //connect to database
+	pg.connect(
+		//enviromental variable, set by heroku when first databse is created
+		process.env.DATABASE_URL, 
+		function(err, client, done) {
+                client.query('SELECT F.dish_id, F.dish, F.suggested, D.name, D.description \
+                              FROM (SELECT dish_id, dish, suggested FROM foodapp.menu WHERE date = $1) as F JOIN foodapp.dishes D ON (F.dish_id = D.id) \
+                              ORDER BY F.dish, F.suggested', 
+                             [date], 
+                             function(err, result) {  
+                                //release the client back to the pool
+                                done();
+                                
+                                var menu = null;
+                                //manages err
+                                if (err){ 
+                                    console.log(err);
+                                } else{
+                                    var rows = result.rows;
+                                    menu = new Menu(date, [], [], [], [], [], []);
 
+                                    var suggested = rows[i].suggested;
 
-function getDailyMenu(date){
-	
-	var m = null;
-	
-	for(var i=0; i<menu.length; i++){
-		if(menu[i].date.toDateString() == date.toDateString()){
-			m = menu[i];
-			break;
-		}
-	}
-	
-	return m;
-	
+                                    for(var i =0; i<rows.length; i++){
+                                        var d = rows[i];
+                                        var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
+                                        switch(d.dish){
+                                            case 'primo':
+                                                if(suggested){
+                                                    menu.firsts.push(dish);
+                                                }else{
+                                                    menu.a_firsts.push(dish);
+                                                }
+                                                break;
+                                            case 'secondo':
+                                                if(suggested){
+                                                    menu.seconds.push(dish);
+                                                }else{
+                                                    menu.a_seconds.push(dish);
+                                                }
+                                                break;
+                                            case 'contorno':
+                                                if(suggested){
+                                                    menu.sides.push(dish);
+                                                }else{
+                                                    menu.a_sides.push(dish);
+                                                }
+                                                break;
+                                            default:
+                                                break;
+
+                                        }
+                                    }
+
+                                }
+                    
+                                callback(err, menu);
+                            }
+                );
+  	     }
+    );
 }
 
 
 
-exports.getDailyMenu = getDailyMenu;
 
 
+function getMenuOrderedDishes(menu, order){
+	
+	
+    if(order != null){
+        menu["first_ordered"] = order.first.id;
+        menu["second_ordered"] = order.second.id;
+        menu["side_ordered"] = order.side.id;
+    }
+    
+	for(var i=0; i<menu.firsts.length; i++){
+        var dish = menu.firsts[i];
+        dish["ordered"] = (order != null && order.first.id == dish.id);
+	}
+	for(var i=0; i<menu.seconds.length; i++){
+		var dish = menu.seconds[i];
+        dish["ordered"] = (order != null && order.second.id == dish.id);
+	}
+	for(var i=0; i<menu.sides.length; i++){
+		var dish = menu.sides[i];
+        dish["ordered"] = (order != null && order.side.id == dish.id);
+	}
+    
+	return menu;
+}
+
+
+exports.Menu = Menu;
+
+exports.getMenu = getMenu;
+exports.getMenuOrderedDishes = getMenuOrderedDishes;

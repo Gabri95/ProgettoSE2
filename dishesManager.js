@@ -1,8 +1,6 @@
 
 //connect DB
 var pg = require('pg');
-
-
 function Dish(id, name, description, ingredients, recipe){
 	this.id = id;
 	this.name = name;

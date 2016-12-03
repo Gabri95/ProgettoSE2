@@ -5,6 +5,7 @@ var pg = require('pg');
 
 
 
+
 function User(username, password, name, surname, address, phone, type, doctor){
 	this.username = username;
 	this.password = password;
@@ -17,9 +18,8 @@ function User(username, password, name, surname, address, phone, type, doctor){
 };
 
 
-
 function authenticate(username, password, callback){
-    
+    console.log(process.env.DATABASE_URL);
     //connect to database
 	pg.connect(
 		//enviromental variable, set by heroku when first databse is created
@@ -30,9 +30,9 @@ function authenticate(username, password, callback){
             console.log(err);
         }
 		//query
-		client.query("(SELECT *, 'user' as type FROM foodapp.users WHERE username = $1 AND password = $2 LIMIT 1)" + 
-                    "UNION" + 
-                    "(SELECT *, null as doctor, 'doctor' as type FROM foodapp.doctors WHERE username = $1 AND password = $2 LIMIT 1)",
+		client.query("(SELECT *, 'user' as type FROM foodapp.users WHERE username = $1 AND password = $2 LIMIT 1) " + 
+                    "UNION " + 
+                    "(SELECT *, null as doctor, 'doctor' as type FROM foodapp.doctors WHERE username = $1 AND password = $2 LIMIT 1) ",
                      [username, password], 
                      function(err, result) {
 			//release the client back to the pool

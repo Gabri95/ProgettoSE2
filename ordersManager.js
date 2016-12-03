@@ -1,7 +1,6 @@
 
 //connect DB
 var pg = require('pg');
-
 var dishesManager = require('./dishesManager.js');
 
 
@@ -27,7 +26,7 @@ function makeOrder(user, date, first, second, side, place, callback){
 		
 		//add order
 		client.query(
-            'INSERT INTO foodapp.orders VALUES ($1, $2, $4, $5, $6, $7) ON CONFLICT (username, date) DO UPDATE SET	first = EXCLUDED.first, second = EXCLUDED.second, side = EXCLUDED.side, place = EXCLUDED.place',
+            'INSERT INTO foodapp.orders VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (username, date) DO UPDATE SET	first = EXCLUDED.first, second = EXCLUDED.second, side = EXCLUDED.side, place = EXCLUDED.place',
             [user, date, first, second, side, place], function(err, result) {
 		  done();
 		  if (err) { 
@@ -49,13 +48,14 @@ function getOrder(user, date, callback){
 		process.env.DATABASE_URL, 
 		function(err, client, done) {
 		//query
-		client.query('SELECT O.place, F.id as f_id, F.name as f_name, F.description as f_des,'+
-                            'S.id as s_id, S.name as s_name, S.description as s_des,' +
-                            'C.id as c_id, C.name as c_name, C.description as c_des' +
-                    'FROM foodapp.orders O JOIN foodapp.dishes F ON (O.first = F.id)' +
-                                'JOIN foodapp.dishes S ON (O.second = S.id)' +
-                                'JOIN foodapp.dishes C ON (O.side = C.id)' +
-                    'WHERE O.username = $1 AND O.date = $2 LIMIT 1', 
+		client.query('SELECT O.place, F.id as f_id, F.name as f_name, F.description as f_des, '+
+                            'S.id as s_id, S.name as s_name, S.description as s_des, ' +
+                            'C.id as c_id, C.name as c_name, C.description as c_des ' +
+                    'FROM foodapp.orders O ' + 
+                                'LEFT OUTER JOIN foodapp.dishes F ON (O.first = F.id) ' +
+                                'LEFT OUTER JOIN foodapp.dishes S ON (O.second = S.id) ' +
+                                'LEFT OUTER JOIN foodapp.dishes C ON (O.side = C.id) ' +
+                    'WHERE O.username = $1 AND O.date = $2', 
                      [user, date],
                      function(err, result) {
 			//release the client back to the pool
@@ -68,9 +68,9 @@ function getOrder(user, date, callback){
                 var r = result.rows[0];
                 order = new Order(user,
                                   date, 
-                                  new dishesManager.Dish(r.f_id, r.f_name, r.f_des, null, null),
-                                  new dishesManager.Dish(r.s_id, r.s_name, r.s_des, null, null), 
-                                  new dishesManager.Dish(r.c_id, r.c_name, r.c_des, null, null),
+                                  (r.f_id != null) ? new dishesManager.Dish(r.f_id, r.f_name, r.f_des, null, null) : null,
+                                  (r.s_id != null) ? new dishesManager.Dish(r.s_id, r.s_name, r.s_des, null, null) : null, 
+                                  (r.c_id != null) ? new dishesManager.Dish(r.c_id, r.c_name, r.c_des, null, null) : null,
                                   r.place);
                 
 		  	}
@@ -88,11 +88,10 @@ function getOrders(user, start_date, end_date, callback){
 		process.env.DATABASE_URL, 
 		function(err, client, done) {
 		//query
-		client.query("SELECT D.date, (CASE WHEN O.date IS NULL THEN 'false' ELSE 'true' END) as ordered" +
-                    "FROM generate_series($2, $3, '1 day'::interval) D LEFT OUTER JOIN foodapp.orders O ON (D.date = O.date)" +
-                    "WHERE O.username = $1" +
+		client.query("SELECT D.date, O.date as ordered " +
+                    "FROM generate_series($2::date, $3::date, '1 day'::interval) D LEFT OUTER JOIN (SELECT * FROM foodapp.orders WHERE username = $1) O ON (D.date = O.date) " +
                     "ORDER BY D.date",
-                     [user, start_date, end_date],
+                     [user, pgFormatDate(start_date), pgFormatDate(end_date)],
                      function(err, result) {
 			//release the client back to the pool
 			done();
@@ -100,11 +99,13 @@ function getOrders(user, start_date, end_date, callback){
 			//manages err
 			if (err){ 
 				console.error(err); 
+                
 		  	} else if(result.rows.length > 0){
                 for(var i=0; i<result.rows.length; i++){
-                    var r = results.rows[i];
-                    orders.push({date: r.date, ordered: r.ordered});
+                    var r = result.rows[i];
+                    orders.push({date: r.date, ordered: (r.ordered != null) ? true : false});
                 }
+                
 		  	}
             callback(err, orders);
             
@@ -122,13 +123,13 @@ function getNearDays(user, today, p, f, callback){
         var days = [];
         
         if(err){
-            
+            console.error(err);
         }else{
             for(var i=0; i<orders.length; i++){
             
-            var o = orders[i];
-            
-            days.push({
+                var o = orders[i];
+
+                days.push({
                     name: days_name[o.date.getDay()],
                     day: o.date.getDate(),
                     month: o.date.getMonth()+1,
@@ -136,6 +137,7 @@ function getNearDays(user, today, p, f, callback){
                     class: (o.ordered) ? "btn-success" : "btn-default"
                 });
             }
+            
         }
         
 
@@ -165,6 +167,7 @@ function followingDay(day, n){
 	
 	var date = new Date(day);
 	date.setDate(day.getDate()+n);
+    
 	return date;
 }
 
@@ -173,6 +176,20 @@ function previeusDay(day, n){
 	var date = new Date(day);
 	date.setDate(day.getDate()-n);
 	return date;
+}
+
+
+//from https://gist.github.com/jczaplew/f055788bf851d0840f50
+// Convert Javascript date to Pg YYYY MM DD
+function pgFormatDate(date) {
+  /* Via http://stackoverflow.com/questions/3605214/javascript-add-leading-zeroes-to-date */
+  function zeroPad(d) {
+    return ("0" + d).slice(-2)
+  }
+
+  var parsed = new Date(date)
+
+  return [parsed.getUTCFullYear(), zeroPad(parsed.getMonth() + 1), zeroPad(parsed.getDate())].join("-");
 }
 
 

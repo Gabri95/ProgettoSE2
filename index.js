@@ -1,4 +1,6 @@
-
+var pg = require('pg');
+process.env.DATABASE_URL=process.env.DATABASE_URL+'?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
+console.log(process.env.DATABASE_URL);
 
 var sessionManager = require("./sessionManager.js");
 var menuManager = require("./menuManager.js");
@@ -29,6 +31,8 @@ var session = require('express-session');
 var app = express();
 
 //app.use(cookieParser());
+
+
 
 
 
@@ -214,7 +218,7 @@ function dayPage(request, response, callback){
 
 app.get('/day', sessionManager.isLogged, function(request, response){
 	
-	dayPage(request, response, function(year, month, day, order){
+	dayPage(request, response, function(year, month, day, days, order){
         if(order == null){
             menuManager.getMenu(day, function(err, menu){
 
@@ -267,7 +271,7 @@ app.get('/day', sessionManager.isLogged, function(request, response){
 
 
 app.get('/edit', sessionManager.isLogged, function(request, response){
-	dayPage(request, response, function(year, month, day, order){
+	dayPage(request, response, function(year, month, day, days, order){
         if(order == null){
             response.redirect('/error');
         }else{
@@ -286,7 +290,7 @@ app.get('/edit', sessionManager.isLogged, function(request, response){
                             t_1: days[3],
                             t_2: days[4],
                             place: order.place,
-                            menu: dishesManager.getMenuOrderedDishes(menu, order)
+                            menu: menuManager.getMenuOrderedDishes(menu, order)
                         }, 
                         function(d){
                             //write response

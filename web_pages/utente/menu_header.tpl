@@ -1,10 +1,10 @@
-<div class="panel">
+<div class="container-fluid" id = "menu_header">
 	<div class="row">
 		<div class="col-xs-1" style="padding: 0px;">
 			<a href="(: y_1 ~ /day?year=[: year :]&month=[: month :]&day=[: day :] :)"
 			 class="navbar-brand" 
 			 style="line-height: 100px; padding: 0px; float: none;">
-				<span class="glyphicon glyphicon-chevron-left" style="font-size:1.5em; text-align: center;">
+				<span class="glyphicon glyphicon-chevron-left" style="font-size:1.5em; text-align: center;"/>
 			</a>
 		</div>
 		(:y_2 ~
@@ -57,7 +57,7 @@
 				<a href="(: t_1 ~ /day?year=[: year :]&month=[: month :]&day=[: day :] :)"
 				 class="navbar-brand"
 				 style="line-height: 100px; padding: 0px; float: none;">
-					<span class="glyphicon glyphicon-chevron-right" style="font-size:1.5em; text-align: center;">
+					<span class="glyphicon glyphicon-chevron-right" style="font-size:1.5em; text-align: center;"/>
 				</a>
 		</div>
 		

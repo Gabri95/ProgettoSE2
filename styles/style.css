@@ -1,0 +1,93 @@
+
+.container {
+    background-color: lightcyan;
+    text-align: center;
+    padding: 0%;
+    min-height: 700px;
+    
+}
+
+.container-fluid {
+    background-color: lightcyan;
+    text-align: left;
+    padding: 5%;
+    
+    /*
+    margin: 0px;
+    padding-top: 0px;
+    */
+}
+
+#menu_header {
+    text-align: center;
+    padding: 2% 2% 0%;
+    background-color: aliceblue;
+    
+}
+
+.panel {
+    margin: 1% 5%;
+}
+
+.panel-heading {
+    
+    padding: 2%;
+    margin: 0;
+}
+.panel-heading h2 {
+    margin: 0;
+}
+
+
+.dish.chosen {
+    color: red;
+}
+
+.choice_list {
+    min-height: 100px;
+    padding: 5% 1%;
+}
+
+.ordine {
+    padding: 0;
+}
+
+.ordine .tumbnail {
+    position: relative;
+}
+
+.ordine .tumbnail img{
+    height: 70px;
+    width: 100px;
+}
+
+.ordine .badge {
+    position: absolute;
+    top: 0;
+    left: 2px;
+    background-color: coral;
+    border-radius: 3px;
+}
+
+.centeredButton {
+    text-align: center;
+    margin: 5%;
+    
+    
+}
+
+.centeredButton .btn {
+    padding: 2%;
+    margin: 0px;
+    font-size: 2em;
+}
+
+.placeBtn {
+    padding: 2%;
+    font-size: 1.5em;
+}
+
+.placeBtn.chosen{
+    
+    background-color: lawngreen;
+}

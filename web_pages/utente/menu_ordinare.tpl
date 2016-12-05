@@ -4,8 +4,13 @@
 		<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.css">
+        
+        <link rel="stylesheet" href="/styles/style.css">
 		
-		
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <script src="/scripts/order.js"></script> 
+        
+        
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<title>Settimana</title>
@@ -13,137 +18,141 @@
 	<body>
 		
 		
-		<div class="container col-md-4 col-md-offset-4" style = "background-color: lightcyan; text-align: center; padding: 0%">
+		<div class="container col-md-4 col-md-offset-4">
 			(:file ~ ./web_pages/utente/header.tpl:)
-			(:file ~ ./web_pages/utente/menu_header.tpl:)
 			
-            <div class="jumbotron" style = "background-color: lightcyan; text-align: left; margin: 0px; padding-top: 0px">
-				<form method="GET" action ="/order">
-					
-					<script>
-						function changePlace(){
-							var btn = document.getElementById("place_button");
-                            var inp = document.getElementById("place");
-                            
-							var content = btn.innerHTML;
-							
-							switch(content){
-								case "domicilio":
-									btn.innerHTML = "mensa";
-                                    inp.value = "mensa";
-									break;
-								default:
-									btn.innerHTML = "domicilio";
-                                    inp.value = "domicilio";
-									break;
-							}
-						}
-					</script>
-					
-					<div class="row">
-						<div class="col-xs-2 col-xs-offset-10">
-							<button type = "button" class="btn btn-default" id = "place_button" onclick="changePlace();">(: place ~ domicilio :)</button>
-						</div>
-					</div>
-					
-                    <input type="hidden" name="place" id="place" value='(: place ~ domicilio :)'>
-					(: day ~
-                        <input type="hidden" name="year" id="year" value="[: year :]">
-                        <input type="hidden" name="month" id="month" value="[: month :]">
-                        <input type="hidden" name="day" id="day" value="[: day :]">
+            <div class="panel panel-default dishesView">
+                <div class="panel-heading">
+                    (: day ~
+                        <h2>[: name :] [: day :]/[: month :]</h2>
                     :)
-                    
-                    <script>
-                        function setChoice(dish, choice_id){
-                            
-                            
-                            
-                            var labels = document.getElementsByName(dish + "_dish");
-                            for(var i =0; i<labels.length; i++){
-                                labels[i].style.color = 'black';
-                            }
-                            
-                            var d = document.getElementById(dish);
-                            console.log(dish + "; " + choice_id + "; " + d.value);
-                            if(choice_id != d.value || d.value == ''){
-                                d.value = choice_id;
-                                
-                                var label = document.getElementById("dish" + choice_id);
-                                label.style.color = 'red';
-                            }else{
-                                d.value = '';
-                            }
-                            
-                        }
-                    </script>
-                    
-					(: menu ~
-                    
-                        
-						<div class="row">
-							<h2 style="margin-top: 0px">Primi</h2>
-						</div>
-                        <input type="hidden" name="first" id ="first" value="[: first_ordered :]">
-						[: firsts ~
-							<div class="row">
-								<div class="col-xs-6">
-									<span style="{: ordered ~ color: red :}" name = "first_dish" id ="dish{: id :}" onclick="setChoice('first', {: id :});">
-                                        <i>{: name :}</i>
-                                    </span>
-								</div>
-								<div class="col-xs-6">
-									<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
-								</div>
-							</div>
-						
-						:]
-						<div class="row">
-							<h2>Secondi</h2>
-						</div>
-                        <input type="hidden" name="second" id ="second" value="[: second_ordered :]">
-						[: seconds ~
-							<div class="row">
-								<div class="col-xs-6">
-									<span style="{: ordered ~ color: red :}" name = "second_dish" id ="dish{: id :}" onclick="setChoice('second', {: id :});">
-                                        <i>{: name :}</i>
-                                    </span>
-								</div>
-								<div class="col-xs-6">
-									<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
-								</div>
-							</div>
-						
-						:]
-						<div class="row">
-							<h2>Contorni</h2>
-						</div>
-                        <input type="hidden" name="side" id ="side" value="[: side_ordered :]">
-						[: sides ~
-							<div class="row">
-								<div class="col-xs-6">
-									<span style="{: ordered ~ color: red :}" name = "side_dish" id ="dish{: id :}" onclick="setChoice('side', {: id :});">
-                                        <i>{: name :}</i>
-                                    </span>
-								</div>
-								<div class="col-xs-6">
-									<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
-								</div>
-							</div>
-						
-						:]
-						
+                </div>
+                
+                <div class="panel-body choice_list">
+                    <div class="col-xs-3 ordine" id="primo_choice">
+                        <div class="tumbnail">
+                            <img src="" class="img-rounded" alt="">
+                            <span class="badge">Primo</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-3 ordine" id="secondo_choice">
+                        <div class="tumbnail">
+                            <img src="" class="img-rounded" alt="">
+                            <span class="badge">Secondo</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-3 ordine" id="contorno_choice">
+                        <div class="tumbnail">
+                            <img src="" class="img-rounded" alt="">
+                            <span class="badge">Contorno</span>
+                        </div>
+                    </div>
+                    <div class="col-xs-3 ordine" id="dessert_choice">
+                        <div class="tumbnail">
+                            <img src="" class="img-rounded" alt="">
+                            <span class="badge">Dessert</span>
+                        </div>
+                    </div>
+                </div>
+                
+            </div>
+            
+            <div class="container-fluid dishesView">
+				
+                <div class="row">
+                    <div class="panel panel-default" id="menu">
+                        <div class="panel-heading">
+                            <h2 id="dishTitle"></h2>
+                        </div>
 
-					:)
-					<div class="row" style="padding: 5% 0%; margin-top: 5%">
-						<div class="col-md-6 col-md-offset-3">
-							<input type="submit" class="btn btn-default" style="width: 100%; padding: 10%; margin: 0px; font-size:2em" value="ORDINA">
-							
-						</div>
-					</div>
-				</form>                
+                        <div class="panel-body" id = "suggestedDishes">
+                            
+                            
+                        </div>
+
+                        <div class="panel-heading alternativa">
+                            <h2>In Alternativa</h2>
+                        </div>
+
+                        <div class="panel-body alternativa" id = "alternativeDishes">
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="row centeredButton">
+                    <button type="button"
+                           class="btn btn-default"
+                           id="orderButton">
+                        Conferma Scelta
+                    </button>
+                </div>
+            </div>
+            
+            
+            <div class="container-fluid" id ="resumeView" style="display: none">
+                <div class="row">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <h2><i>La tua ordinazione</i></h2>
+                        </div>
+                        <div class="panel-body" id="resumeDishes">
+                            
+                        </div>
+                        
+                    </div>
+                </div>
+                <div class="row" style="text-align: center;">
+                    <h2>Dove preferisci mangiare?</h2>
+                </div>
+                <div class="row" style="text-align: center;">
+                    <div class="col-xs-6">
+                        <button type="button" class="btn btn-default placeBtn" id="domicilio">Domicilio</button>
+                    </div>
+                    <div class="col-xs-6">
+                        <button type="button" class="btn btn-default placeBtn" id="mensa">Mensa</button>
+                    </div>
+                </div>
+                <div class="row centeredButton">
+                    <form method='GET' action="/makeorder">
+                        <input type="hidden" id="luogo" name="place" value="domicilio">
+                        <input type="hidden" id="primo" name="first">
+                        <input type="hidden" id="secondo" name="second">
+                        <input type="hidden" id="contorno" name="side">
+                        <input type="hidden" id="dessert" name="dessert">
+                        (: day ~
+                            <input type="hidden" name="day" value="[: day :]">
+                            <input type="hidden" name="month" value="[: month :]">
+                            <input type="hidden" name="year" value="[: year :]">
+                        :)
+                        
+                        
+                        <button type="submit" 
+                               class="btn btn-default"
+                               id="completeButton">
+                            Conferma Ordine
+                        </button>
+                    </form>
+                </div>
             </div>
         </div>
-
-		
+        
+        
+        (: day ~
+            <script>   
+                setDate('[: day :]', '[: month :]', '[: year :]');
+            </script>
+        :)
+        (: order ~
+            <script>
+                setOrder(
+                    new Dish('[: first ~ {: id :} :]', '[: first ~ {: name :} :]'),
+                    new Dish('[: second ~ {: id :} :]', '[: second ~ {: name :} :]'),
+                    new Dish('[: side ~ {: id :} :]', '[: side ~ {: name :} :]'),
+                    new Dish('[: dessert ~ {: id :} :]', '[: dessert ~ {: name :} :]'),
+                    '[: place :]'
+                );
+            </script>
+        :)
+        
 	</body>
 </html>

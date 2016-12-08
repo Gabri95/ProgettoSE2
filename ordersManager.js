@@ -46,28 +46,34 @@ function followingDay(day, n){
 function getNextDays(user_id, today, n){
 	
 	var days = [];
-	
-	days.push({
-		name: days_name[today.getDay()],
-		day: today.getDate(),
-		month: today.getMonth()+1,
-		class: (getOrders(user_id, today) == null) ? "btn-default" : "btn-success"
-	});
-	
-	for(var i=1; i< n; i++){
-		var date = followingDay(today, i);
-		
-		days.push({
-			name: days_name[date.getDay()],
-			day: date.getDate(),
-			month: date.getMonth()+1,
-			class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
-		});
-		
-	}
+    
+    if(today != null && n > 0){
+        days.push({
+            name: days_name[today.getDay()],
+            day: today.getDate(),
+            month: today.getMonth()+1,
+            class: (getOrders(user_id, today) == null) ? "btn-default" : "btn-success"
+        });
+
+        for(var i=1; i< n; i++){
+            var date = followingDay(today, i);
+
+            days.push({
+                name: days_name[date.getDay()],
+                day: date.getDate(),
+                month: date.getMonth()+1,
+                class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
+            });
+
+        }
+    }
+    
+    
 	
 	return days;
 }
 
+
+exports.Order = Order;
 exports.getNextDays = getNextDays;
 exports.getOrders = getOrders;

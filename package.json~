@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -18,7 +19,11 @@
   "homepage": "https://github.com/Gabri95/ProgettoSE2#readme",
   "dependencies": {
     "bind": "^0.1.7",
+    "body-parser": "^1.15.2",
+    "cookie-parser": "^1.4.3",
     "express": "^4.14.0",
+    "express-session": "^1.14.2",
+    "path": "^0.12.7",
     "util": "^0.10.3"
   }
 }

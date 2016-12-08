@@ -29,12 +29,15 @@ function getDailyMenu(date){
 	
 	var m = null;
 	
-	for(var i=0; i<menu.length(); i++){
-		if(menu[i].date.toDateString() == date.toDateString()){
-			m = menu[i];
-			break;
-		}
-	}
+    if(date != null){
+        for(var i=0; i<menu.length; i++){
+            if(menu[i].date.toDateString() == date.toDateString()){
+                m = menu[i];
+                break;
+            }
+        }
+    }
+	
 	
 	return m;
 	

@@ -27,7 +27,6 @@ function authenticate(username, password){
 			break;
 		}
 	}
-	console.log(u);
 	return u;
 	
 }

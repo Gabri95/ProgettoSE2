@@ -18,13 +18,13 @@
 			(:file ~ ./web_pages/utente/menu_header.tpl:)
 			
             <div class="jumbotron" style = "background-color: lightcyan; text-align: left; margin: 0px;">
-                <div class="row">
-                    <div class="col-xs-2 col-xs-offset-10">
-                        <span><h3><i>(: place :)</i></h3></span>
-                    </div>
-                </div>
+                
 				(: order ~
-                    
+                    <div class="row">
+                        <div class="col-xs-2 col-xs-offset-10">
+                            <span><h3><i>[: place :]</i></h3></span>
+                        </div>
+                    </div>
 					[: first ~
 						<div class="row">
 							<h2>Primi</h2>
@@ -34,7 +34,7 @@
 								<span><h3><i>{: name :}</i></h3></span> 
 							</div>
 							<div class="col-xs-6">
-								<img src="{: photo :}" class="img-rounded" alt="{: name :}" width="150" height="90">
+								<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
 							</div>
 						</div>
 					
@@ -48,7 +48,7 @@
 								<span><h3><i>{: name :}</i></h3></span> 
 							</div>
 							<div class="col-xs-6">
-								<img src="{: photo :}" class="img-rounded" alt="{: name :}" width="150" height="90">
+								<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
 							</div>
 						</div>
 					
@@ -62,7 +62,7 @@
 								<span><h3><i>{: name :}</i></h3></span> 
 							</div>
 							<div class="col-xs-6">
-								<img src="{: photo :}" class="img-rounded" alt="{: name :}" width="150" height="90">
+								<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
 							</div>
 						</div>
 					

@@ -1,4 +1,6 @@
-
+var pg = require('pg');
+process.env.DATABASE_URL=process.env.DATABASE_URL+'?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
+console.log(process.env.DATABASE_URL);
 
 var sessionManager = require("./sessionManager.js");
 var menuManager = require("./menuManager.js");
@@ -29,6 +31,8 @@ var session = require('express-session');
 var app = express();
 
 //app.use(cookieParser());
+
+
 
 
 
@@ -93,15 +97,18 @@ app.post('/login', function (req, res) {
 	
   var post = req.body;
   
-  var user = sessionManager.authenticate(post.username, post.password);
-  
-  if (user !== null) {
-    req.session.user = user;
-    
-    res.redirect('/');
-  } else {
-    res.redirect('/start');
-  }
+  sessionManager.authenticate(post.username, post.password, function(err, user){
+      if(err){
+          response.redirect('/error');
+      }else if (user !== null) {
+        req.session.user = user;
+
+        res.redirect('/');
+      } else {
+        res.redirect('/start');
+      }
+  });
+
 });
 
 
@@ -131,36 +138,45 @@ app.get('/order', sessionManager.isLogged, function(request, response){
 		response.redirect('/error');
 	}else{
         var date = new Date(1900 + parseInt(year), month -1, day, 0, 0, 0, 0);
-        ordersManager.makeOrder(request.session.user.id, date, first, second, side, place);
-        
-        response.redirect('/day?year=' + year + '&month=' + month + '&day=' + day);
-        
+        ordersManager.makeOrder(request.session.user.username, date, first, second, side, place, function(err){
+            
+            if(err){
+                response.redirect('/error');
+            }else{
+                response.redirect('/day?year=' + year + '&month=' + month + '&day=' + day);
+            }
+            
+        });   
     }
-		
-	
 });
 
 
 app.use('/week', sessionManager.isLogged, function(request, response){
 	
-    var days = ordersManager.getNextDays(request.session.user.id, new Date(), 6);
+    var days = ordersManager.getNearDays(request.session.user.username, new Date(), 0, 6, function(err, days){
+        
+        if(err){
+            response.redirect('/error');
+        }else{
+            //Compilo e inserisco nella risposta il template
+            bind.toFile(
+                'web_pages/utente/settimana.tpl',
+                {days: days}, 
+                function(d){
+                    //write response
+                    response.writeHead(200, createHeaders());
+                    response.end(d);
+                }
+            );
+        }
+    });
 	
-	//Compilo e inserisco nella risposta il template
-	bind.toFile(
-		'web_pages/utente/settimana.tpl',
-		{days: days}, 
-		function(d){
-			//write response
-			response.writeHead(200, createHeaders());
-			response.end(d);
-		}
-	);
+	
 });
 
 
-
-app.get('/day', sessionManager.isLogged, function(request, response){
-	
+function dayPage(request, response, callback){
+    
     //Uso il modulo "url" per analizzare l'url della richiesta ed estrarne i parametri
 	var url_parts = url.parse(request.url, true);
 	//variabile che conterrà i parametri
@@ -171,119 +187,75 @@ app.get('/day', sessionManager.isLogged, function(request, response){
 	var day = getVar.day;
 	
 	
-	if(year == 'undefined' || month == 'undefined' || day == 'undefined'){
-		
+	if(year == 'undefined' || month == 'undefined' || day == 'undefined'){		
 		response.redirect('/error');
-		
 	}else{
 		
-		
-		var day = new Date(1900 + parseInt(year), month, day, 0, 0, 0, 0);
+        var day = new Date(1900 + parseInt(year), month, day, 0, 0, 0, 0);
 	
-		var days = ordersManager.getNearDays(request.session.user.id, day, 2);
-		
-		for(var i=0; i< days.length; i++){
-			days[i].name = days[i].name.slice(0, 3);
-		}
-		
-		var order = ordersManager.getOrders(request.session.user.id, day);
-		
-		if(order == null){
-			
-			var menu = menuManager.getDailyMenu(day);
-			
-			if(menu != null){
-				//Compilo e inserisco nella risposta il template
-				bind.toFile(
-					'web_pages/utente/menu_ordinare.tpl',
-					{
-						y_2: days[0],
-						y_1: days[1],
-						day: days[2],
-						t_1: days[3],
-						t_2: days[4],
-                        place: 'domicilio',
-						menu: dishesManager.getMenuOrderedDishes(menu, null)
-					}, 
-					function(d){
-						//write response
-						response.writeHead(200, createHeaders());
-						response.end(d);
-					}
-				);
-			}else{
-				response.redirect('/error');
-			}
-			
-		}else{
-			//Compilo e inserisco nella risposta il template
-			bind.toFile(
-				'web_pages/utente/menu_ordinato.tpl',
-				{
-					y_2: days[0],
-					y_1: days[1],
-					day: days[2],
-					t_1: days[3],
-					t_2: days[4],
-                    place: order.place,
-					order: dishesManager.getOrderedDishes(order)
-				}, 
-				function(d){
-					//write response
-					response.writeHead(200, createHeaders());
-					response.end(d);
-				}
-			);
-			
-		}
-			
-	}
-});
+		ordersManager.getNearDays(request.session.user.username, day, 2, 2, function(err, days){
+            if(err){
+                response.redirect('/error');
+            }else{
+                for(var i=0; i< days.length; i++){
+                    days[i].name = days[i].name.slice(0, 3);
+                }
 
-
-
-app.get('/edit', sessionManager.isLogged, function(request, response){
-	
-    //Uso il modulo "url" per analizzare l'url della richiesta ed estrarne i parametri
-	var url_parts = url.parse(request.url, true);
-	//variabile che conterrà i parametri
-	var getVar = url_parts.query;
-	
-	var year = getVar.year;
-	var month = getVar.month;
-	var day = getVar.day;
+                ordersManager.getOrder(request.session.user.username, day, function(err, order){
+                    if(err){
+                        response.redirect('/error');
+                    }else{
+                        callback(year, month, day, days, order);
+                    }
+                });
+                
+            }
+            
+        });
+    }
     
-	if(year == 'undefined' || month == 'undefined' || day == 'undefined'){
-		
-		resp.redirect('/error');
-		
-	}else{
-		
-		var day = new Date(1900 + parseInt(year), month-1, day, 0, 0, 0, 0);
+}
+
+app.get('/day', sessionManager.isLogged, function(request, response){
 	
-		var days = ordersManager.getNearDays(request.session.user.id, day, 2);
-		
-		for(var i=0; i< days.length; i++){
-			days[i].name = days[i].name.slice(0, 3);
-		}
-		
-		var order = ordersManager.getOrders(request.session.user.id, day);
-        var menu = menuManager.getDailyMenu(day);
-        
-        if(order == 'null' || menu == 'null'){
-            response.redirect('/error');
-        }else{
+	dayPage(request, response, function(year, month, day, days, order){
+        if(order == null){
+            menuManager.getMenu(day, function(err, menu){
+
+                if(err || menu == null){
+                    response.redirect('/error');
+                }else{
+                    //Compilo e inserisco nella risposta il template
+                    bind.toFile(
+                        'web_pages/utente/menu_ordinare.tpl',
+                        {
+                            y_2: days[0],
+                            y_1: days[1],
+                            day: days[2],
+                            t_1: days[3],
+                            t_2: days[4],
+                            place: 'domicilio',
+                            menu: menuManager.getMenuOrderedDishes(menu, null)
+                        }, 
+                        function(d){
+                            //write response
+                            response.writeHead(200, createHeaders());
+                            response.end(d);
+                        }
+                    );
+                }
+            });
+        } else {
             //Compilo e inserisco nella risposta il template
             bind.toFile(
-                'web_pages/utente/menu_ordinare.tpl',
+                'web_pages/utente/menu_ordinato.tpl',
                 {
                     y_2: days[0],
                     y_1: days[1],
                     day: days[2],
                     t_1: days[3],
                     t_2: days[4],
-                    place: order.place,
-                    menu: dishesManager.getMenuOrderedDishes(menu, order)
+                    order: order
                 }, 
                 function(d){
                     //write response
@@ -291,9 +263,48 @@ app.get('/edit', sessionManager.isLogged, function(request, response){
                     response.end(d);
                 }
             );
-            
-        }		
-	}
+
+        }
+    });
+});
+
+
+
+app.get('/edit', sessionManager.isLogged, function(request, response){
+	dayPage(request, response, function(year, month, day, days, order){
+        if(order == null){
+            response.redirect('/error');
+        }else{
+            menuManager.getMenu(day, function(err, menu){
+                
+                if(err || menu == null){
+                    response.redirect('/error');
+                }else{
+                    //Compilo e inserisco nella risposta il template
+                    bind.toFile(
+                        'web_pages/utente/menu_ordinare.tpl',
+                        {
+                            y_2: days[0],
+                            y_1: days[1],
+                            day: days[2],
+                            t_1: days[3],
+                            t_2: days[4],
+                            place: order.place,
+                            menu: menuManager.getMenuOrderedDishes(menu, order)
+                        }, 
+                        function(d){
+                            //write response
+                            response.writeHead(200, createHeaders());
+                            response.end(d);
+                        }
+                    );
+
+                }
+                
+            });	
+        }
+        
+	});
 
 });
 

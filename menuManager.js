@@ -38,7 +38,6 @@ function getDailyMenu(date){
         }
     }
 	
-	
 	return m;
 	
 }

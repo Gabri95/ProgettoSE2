@@ -18,7 +18,13 @@
 			(:file ~ ./web_pages/utente/menu_header.tpl:)
 			
             <div class="jumbotron" style = "background-color: lightcyan; text-align: left; margin: 0px;">
+                <div class="row">
+                    <div class="col-xs-2 col-xs-offset-10">
+                        <span><h3><i>(: place :)</i></h3></span>
+                    </div>
+                </div>
 				(: order ~
+                    
 					[: first ~
 						<div class="row">
 							<h2>Primi</h2>
@@ -66,7 +72,11 @@
 				:)
 				<div class="row" style="padding: 5% 0%; margin-top: 5%">
                     <div class="col-md-6 col-md-offset-3">
-                        <a href="#" class="btn btn-default" style="width: 100%; padding: 10%; margin: 0px; font-size:2em" >MODIFICA</a>
+                        <a href="(: day ~ /edit?year=[: year :]&month=[: month :]&day=[: day :] :)" 
+                           class="btn btn-default"
+                           style="width: 100%; padding: 10%; margin: 0px; font-size:2em" >
+                            MODIFICA
+                        </a>
                         
                     </div>
                 </div>

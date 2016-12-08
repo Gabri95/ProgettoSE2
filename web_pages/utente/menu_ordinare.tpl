@@ -17,20 +17,24 @@
 			(:file ~ ./web_pages/utente/header.tpl:)
 			(:file ~ ./web_pages/utente/menu_header.tpl:)
 			
-            <div class="jumbotron" style = "background-color: lightcyan; text-align: left; margin: 0px;">
-				<form method="GET" action ="#">
+            <div class="jumbotron" style = "background-color: lightcyan; text-align: left; margin: 0px; padding-top: 0px">
+				<form method="GET" action ="/order">
 					
 					<script>
 						function changePlace(){
-							var btn = document.getElementById("luogo");
+							var btn = document.getElementById("place_button");
+                            var inp = document.getElementById("place");
+                            
 							var content = btn.innerHTML;
 							
 							switch(content){
-								case "Domicilio":
-									btn.innerHTML = "Mensa";
+								case "domicilio":
+									btn.innerHTML = "mensa";
+                                    inp.value = "mensa";
 									break;
 								default:
-									btn.innerHTML = "Domicilio";
+									btn.innerHTML = "domicilio";
+                                    inp.value = "domicilio";
 									break;
 							}
 						}
@@ -38,19 +42,54 @@
 					
 					<div class="row">
 						<div class="col-xs-2 col-xs-offset-10">
-							<button type = "button" class="btn btn-default" name="luogo" id="luogo" onclick="changePlace();">Mensa</button>
+							<button type = "button" class="btn btn-default" id = "place_button" onclick="changePlace();">(: place ~ domicilio :)</button>
 						</div>
 					</div>
 					
-					
+                    <input type="hidden" name="place" id="place" value='(: place ~ domicilio :)'>
+					(: day ~
+                        <input type="hidden" name="year" id="year" value="[: year :]">
+                        <input type="hidden" name="month" id="month" value="[: month :]">
+                        <input type="hidden" name="day" id="day" value="[: day :]">
+                    :)
+                    
+                    <script>
+                        function setChoice(dish, choice_id){
+                            
+                            
+                            
+                            var labels = document.getElementsByName(dish + "_dish");
+                            for(var i =0; i<labels.length; i++){
+                                labels[i].style.color = 'black';
+                            }
+                            
+                            var d = document.getElementById(dish);
+                            console.log(dish + "; " + choice_id + "; " + d.value);
+                            if(choice_id != d.value || d.value == ''){
+                                d.value = choice_id;
+                                
+                                var label = document.getElementById("dish" + choice_id);
+                                label.style.color = 'red';
+                            }else{
+                                d.value = '';
+                            }
+                            
+                        }
+                    </script>
+                    
 					(: menu ~
+                    
+                        
 						<div class="row">
-							<h2>Primi</h2>
+							<h2 style="margin-top: 0px">Primi</h2>
 						</div>
-						[: first ~
+                        <input type="hidden" name="first" id ="first" value="[: first_ordered :]">
+						[: firsts ~
 							<div class="row">
 								<div class="col-xs-6">
-									<span><h3><i>{: name :}</i></h3></span> 
+									<span style="{: ordered ~ color: red :}" name = "first_dish" id ="dish{: id :}" onclick="setChoice('first', {: id :});">
+                                        <i>{: name :}</i>
+                                    </span>
 								</div>
 								<div class="col-xs-6">
 									<img src="{: photo :}" class="img-rounded" alt="{: name :}" width="150" height="90">
@@ -61,10 +100,13 @@
 						<div class="row">
 							<h2>Secondi</h2>
 						</div>
-						[: second ~
+                        <input type="hidden" name="second" id ="second" value="[: second_ordered :]">
+						[: seconds ~
 							<div class="row">
 								<div class="col-xs-6">
-									<span><h3><i>{: name :}</i></h3></span> 
+									<span style="{: ordered ~ color: red :}" name = "second_dish" id ="dish{: id :}" onclick="setChoice('second', {: id :});">
+                                        <i>{: name :}</i>
+                                    </span>
 								</div>
 								<div class="col-xs-6">
 									<img src="{: photo :}" class="img-rounded" alt="{: name :}" width="150" height="90">
@@ -75,10 +117,13 @@
 						<div class="row">
 							<h2>Contorni</h2>
 						</div>
-						[: side ~
+                        <input type="hidden" name="side" id ="side" value="[: side_ordered :]">
+						[: sides ~
 							<div class="row">
 								<div class="col-xs-6">
-									<span><h3><i>{: name :}</i></h3></span> 
+									<span style="{: ordered ~ color: red :}" name = "side_dish" id ="dish{: id :}" onclick="setChoice('side', {: id :});">
+                                        <i>{: name :}</i>
+                                    </span>
 								</div>
 								<div class="col-xs-6">
 									<img src="{: photo :}" class="img-rounded" alt="{: name :}" width="150" height="90">
@@ -91,7 +136,7 @@
 					:)
 					<div class="row" style="padding: 5% 0%; margin-top: 5%">
 						<div class="col-md-6 col-md-offset-3">
-							<input type="submit" class="btn btn-default" style="width: 100%; padding: 10%; margin: 0px; font-size:2em" >ORDINA</a>
+							<input type="submit" class="btn btn-default" style="width: 100%; padding: 10%; margin: 0px; font-size:2em" value="ORDINA">
 							
 						</div>
 					</div>

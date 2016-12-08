@@ -8,7 +8,9 @@
         <link rel="stylesheet" href="/styles/style.css">
 		
 		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        <script src="/scripts/order.js"></script> 
+        
+		<!-- Inclusione dello script JavaScript che implementa le funzionalità necessarie al funzionamento della pagina-->
+		<script src = "/scripts/order.js" type = "text/javascript"></script>
         
         
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,7 +23,7 @@
 		<div class="container col-md-4 col-md-offset-4">
 			(:file ~ ./web_pages/utente/header.tpl:)
 			
-            <div class="panel panel-default dishesView">
+            <div class="panel dishesView">
                 <div class="panel-heading">
                     (: day ~
                         <h2>[: name :] [: day :]/[: month :]</h2>
@@ -60,7 +62,7 @@
             <div class="container-fluid dishesView">
 				
                 <div class="row">
-                    <div class="panel panel-default" id="menu">
+                    <div class="panel" id="menu">
                         <div class="panel-heading">
                             <h2 id="dishTitle"></h2>
                         </div>
@@ -91,7 +93,7 @@
             
             <div class="container-fluid" id ="resumeView" style="display: none">
                 <div class="row">
-                    <div class="panel panel-default">
+                    <div class="panel">
                         <div class="panel-heading">
                             <h2><i>La tua ordinazione</i></h2>
                         </div>

@@ -1,6 +1,6 @@
 
 .container {
-    background-color: lightcyan;
+    background-color: #FFED57;
     text-align: center;
     padding: 0%;
     min-height: 700px;
@@ -8,9 +8,9 @@
 }
 
 .container-fluid {
-    background-color: lightcyan;
+    background-color: #FFED57;
     text-align: left;
-    padding: 5%;
+    padding: 7%;
     
     /*
     margin: 0px;
@@ -18,26 +18,143 @@
     */
 }
 
-#menu_header {
+.jumbotron {
+    background-color: #FFED57;
     text-align: center;
-    padding: 2% 2% 0%;
-    background-color: aliceblue;
+    padding: 2%;
+    margin: 0;
+}
+
+.navbar {
+    background-color: #EA3C00;
+    padding: 0%;
+    margin: 0%;
+}
+
+.centeredTitle {
+    
+    padding: 5%;
+    margin-top: 13%;
+    margin-bottom: 13%;
+    
     
 }
 
+.glyphicon {
+    color: #951F00;
+    font-size:1.5em;
+    text-align: center;
+}
+
+.form {
+    padding: 5% 0%;
+    margin-top: 0%;
+    font-size: 1.5em;
+}
+
+.form input.btn {
+    width: 100%;
+    margin: 7% 0%;
+    font-size: 1em;
+}
+
+.form a.btn {
+    font-size: 1.5em;
+    width: 100%;
+    padding: 10%;
+    margin: 3% 0%;
+}
+
+
+#menu_header {
+    text-align: center;
+    padding: 0% 2%;
+    background-color: #FFE951;
+    
+}
+
+.completed {
+    background-color: green;
+    color: black;
+}
+
+.uncompleted {
+    background-color: white;
+    color: black;
+}
+
+.expired {
+    background-color: dimgrey;
+    color: white;
+}
+
+
+#menu_header .today{
+    padding: 0px;
+}
+#menu_header .today a{
+    width: 100%;
+    padding: 10%;
+    margin: 2px 0px;
+    font-size: 2.2em;
+    text-align: center;
+}
+
+#menu_header .day {
+    padding: 5px;
+}
+
+#menu_header .day a{
+    width: 100%;
+    padding: 10%;
+    margin: 10% 0%;
+    font-size:1.7em;
+    text-align: center;
+}
+
+.arrow {
+    padding: 0px;
+    color: #951F00;
+}
+
+.arrow a{
+    line-height: 100px;
+    padding: 0px;
+    float: none;
+}
+
+.arrow a span {
+    font-size:1.5em;
+    text-align: center;
+    
+}
+
+.week .day a{
+    width: 100%;
+    padding: 5% 7%;
+    margin: 2%;/*10%*/
+    font-size:2em;
+    text-align: center;
+}
+
+
 .panel {
-    margin: 1% 5%;
+    margin: 1%;
 }
 
 .panel-heading {
-    
+    background-color: #FF7A57;
     padding: 2%;
     margin: 0;
 }
 .panel-heading h2 {
     margin: 0;
+    color: #FFF6C6;
 }
 
+.panel-body {
+    background-color: #FFF7A2;
+}
 
 .dish.chosen {
     color: red;
@@ -46,10 +163,11 @@
 .choice_list {
     min-height: 100px;
     padding: 5% 1%;
+    background-color: #951F00;
 }
 
 .ordine {
-    padding: 0;
+    padding: 0% 1%;
 }
 
 .ordine .tumbnail {
@@ -58,28 +176,38 @@
 
 .ordine .tumbnail img{
     height: 70px;
-    width: 100px;
+    width: 100%;
 }
 
 .ordine .badge {
     position: absolute;
     top: 0;
-    left: 2px;
-    background-color: coral;
+    left: 0px;
+    background-color: #B13000;
     border-radius: 3px;
 }
+
 
 .centeredButton {
     text-align: center;
     margin: 5%;
     
-    
 }
 
 .centeredButton .btn {
-    padding: 2%;
+    padding: 5%;
     margin: 0px;
     font-size: 2em;
+}
+
+.bigButton {
+    text-align: center;
+    margin: 7%;
+}
+
+.bigButton .btn {
+    padding: 8% 15%;
+    font-size: 2.5em;
 }
 
 .placeBtn {
@@ -89,5 +217,6 @@
 
 .placeBtn.chosen{
     
-    background-color: lawngreen;
+    background-color: green;
+    color: white;
 }

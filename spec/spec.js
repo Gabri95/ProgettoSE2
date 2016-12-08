@@ -9,7 +9,7 @@ var dishesManager = require("../dishesManager.js");
 
 
  
-var base_url = "http://localhost:1337";
+var base_url = "http://localhost:5000";
  
 describe("Test authentication:", function() {
     
@@ -115,7 +115,7 @@ describe("Test sessionManager: ", function(){
 describe("Test ordersManager: ", function(){
     
     
-    describe(" on getOrder", function(){
+    describe("on getOrder", function(){
         
         it(" with unexisting user", function(done){
             var order = ordersManager.getOrders(100, new Date("November 28, 2016"));
@@ -131,9 +131,63 @@ describe("Test ordersManager: ", function(){
         
         it(" with existing user", function(done){
             var order = ordersManager.getOrders(0, new Date("November 28, 2016"));
-            expect(order).toEqual(new ordersManager.Order(0, new Date("November 28, 2016"), 0, 3, 5));
+            expect(order).toEqual(new ordersManager.Order(0, new Date("November 28, 2016"), 0, 3, 5, "mensa"));
             done();
         });
+            
+        
+    });
+    
+    describe(" on makeOrder", function(){
+        var day =  new Date("November 28, 2017");
+        
+        it(" check if order inserted", function(done){
+            
+            ordersManager.makeOrder(0, day, 0, 3, 5, 'mensa');
+            
+            var order = ordersManager.getOrders(0, day);
+            expect(order).not.toBeNull();
+            expect(order.user_id).toBe(0);
+            expect(order.date).toEqual(day);
+            expect(order.first_id).toBe(0);
+            expect(order.second_id).toBe(3);
+            expect(order.side_id).toBe(5);
+            expect(order.place).toEqual('mensa');
+            done();
+        });
+        
+        it(" check if order overwritten", function(done){
+            
+            ordersManager.makeOrder(0, day, 1, 4, 6, 'domicilio');
+            
+            var order = ordersManager.getOrders(0, day);
+            expect(order).not.toBeNull();
+            expect(order.user_id).toBe(0);
+            expect(order.date).toEqual(day);
+            expect(order.first_id).toBe(1);
+            expect(order.second_id).toBe(4);
+            expect(order.side_id).toBe(6);
+            expect(order.place).toEqual('domicilio');
+            done();
+        });
+        
+        it(" check if order overwritten", function(done){
+            
+            ordersManager.makeOrder(0, day, 'a', 'undefined', -3, 'asnem');
+            
+            var order = ordersManager.getOrders(0, day);
+            expect(order).not.toBeNull();
+            expect(order.user_id).toBe(0);
+            expect(order.date).toEqual(day);
+            expect(order.first_id).toBe(null);
+            expect(order.second_id).toBe(null);
+            expect(order.side_id).toBe(null);
+            expect(order.place).toEqual('domicilio');
+            
+            done();
+        });
+        
+        
             
         
     });
@@ -188,7 +242,7 @@ describe("Test ordersManager: ", function(){
         it(" with a positive number of days", function(done){
             var n = 5;
             var days = ordersManager.getNearDays(0, new Date(), n);
-            expect(days.length).toBe(11);
+            expect(days.length).toBe(2*n+1);
             expect(days[n].name).toBe(days_name[today.getDay()]);
             expect(days[n].day).toBe(today.getDate());
             expect(days[n].month).toBe(today.getMonth()+1);

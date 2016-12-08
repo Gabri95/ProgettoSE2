@@ -16,7 +16,7 @@ var orders = [
 	//new Order(0, new Date("November 30, 2016"), 1, 3, 6, "domicilio"),
 	new Order(0, new Date("November 31, 2016"), 2, 4, 6, "domicilio"),
 	new Order(1, new Date("November 28, 2016"), 1, null, 5, "mensa"),
-	new Order(1, new Date("November 28, 2016"), 0, 3, null, "domicilio"),
+	new Order(1, new Date("November 29, 2016"), 0, 3, null, "domicilio"),
 
 ];
 
@@ -89,6 +89,7 @@ function getNextDays(user_id, today, n){
             name: days_name[today.getDay()],
             day: today.getDate(),
             month: today.getMonth()+1,
+            year: today.getYear(),
             class: (getOrders(user_id, today) == null) ? "btn-default" : "btn-success"
         });
 
@@ -99,6 +100,7 @@ function getNextDays(user_id, today, n){
                 name: days_name[date.getDay()],
                 day: date.getDate(),
                 month: date.getMonth()+1,
+                year: date.getYear(),
                 class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
             });
 

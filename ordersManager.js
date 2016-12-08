@@ -84,40 +84,42 @@ function getNearDays(user_id, today, n){
 	
 	var days = [];
 	
+	if(today != null && n >= 0){
+        for(var i=n; i>0; i--){
+            var date = previeusDay(today, i);
+
+            days.push({
+                name: days_name[date.getDay()],
+                day: date.getDate(),
+                month: date.getMonth()+1,
+                year: date.getYear(),
+                class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
+            });
+        }
+
+        days.push({
+            name: days_name[today.getDay()],
+            day: today.getDate(),
+            month: today.getMonth()+1,
+            year: today.getYear(),
+            class: (getOrders(user_id, today) == null) ? "btn-default" : "btn-success"
+        });
+
+        for(var i=1; i<= n; i++){
+            var date = followingDay(today, i);
+
+            days.push({
+                name: days_name[date.getDay()],
+                day: date.getDate(),
+                month: date.getMonth()+1,
+                year: date.getYear(),
+                class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
+            });
+
+        }
+    }
 	
 	
-	for(var i=n; i>0; i--){
-		var date = previeusDay(today, i);
-		
-		days.push({
-			name: days_name[date.getDay()],
-			day: date.getDate(),
-			month: date.getMonth()+1,
-			year: date.getYear(),
-			class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
-		});
-	}
-	
-	days.push({
-		name: days_name[today.getDay()],
-		day: today.getDate(),
-		month: today.getMonth()+1,
-		year: today.getYear(),
-		class: (getOrders(user_id, today) == null) ? "btn-default" : "btn-success"
-	});
-	
-	for(var i=1; i<= n; i++){
-		var date = followingDay(today, i);
-		
-		days.push({
-			name: days_name[date.getDay()],
-			day: date.getDate(),
-			month: date.getMonth()+1,
-			year: date.getYear(),
-			class: (getOrders(user_id, date) == null) ? "btn-default" : "btn-success"
-		});
-		
-	}
 	
 	return days;
 }

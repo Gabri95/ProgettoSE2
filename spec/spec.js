@@ -168,6 +168,52 @@ describe("Test ordersManager: ", function(){
         
     });
     
+    describe(" on getNearDays", function(){
+        
+        var days_name = ["domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"];
+        var today = new Date();
+        it(" with 0 days", function(done){
+            var n = 0;
+            
+            var days = ordersManager.getNearDays(0, today, n);
+            expect(days.length).toBe(1);
+            expect(days[n].name).toBe(days_name[today.getDay()]);
+            expect(days[n].day).toBe(today.getDate());
+            expect(days[n].month).toBe(today.getMonth()+1);
+            expect(days[n].year).toBe(today.getYear());
+            
+            done();
+        });
+        
+        it(" with a positive number of days", function(done){
+            var n = 5;
+            var days = ordersManager.getNearDays(0, new Date(), n);
+            expect(days.length).toBe(11);
+            expect(days[n].name).toBe(days_name[today.getDay()]);
+            expect(days[n].day).toBe(today.getDate());
+            expect(days[n].month).toBe(today.getMonth()+1);
+            expect(days[n].year).toBe(today.getYear());
+            
+            done();
+        });
+        
+        it(" with a negative number of days", function(done){
+            var n = -5;
+            var days = ordersManager.getNearDays(0, new Date(), n);
+            expect(days.length).toBe(0);
+            done();
+        });
+        
+        it(" with null day", function(done){
+            var n = 5;
+            var days = ordersManager.getNearDays(100, null, n);
+            expect(days.length).toBe(0);
+            done();
+        });
+            
+        
+    });
+    
     
 });
 

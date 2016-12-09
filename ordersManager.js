@@ -1,4 +1,7 @@
 
+var DAY_LIMIT = 3;
+
+
 //connect DB
 var pg = require('pg');
 var utility = require('./utility.js');
@@ -122,6 +125,15 @@ function getOrders(user, start_date, end_date, callback){
 }
 
 
+function getOrderClass(order){
+    var today = new Date();
+    if(followingDay(today, DAY_LIMIT) > order.date){
+        return 'expired';
+    }else{
+        return order.ordered ? 'completed' : 'uncompleted';
+    }
+    
+}
 
 
 function getNearDays(user, today, p, f, callback){
@@ -149,7 +161,7 @@ function getNearDays(user, today, p, f, callback){
                     day: o.date.getDate(),
                     month: o.date.getMonth()+1,
                     year: o.date.getFullYear(),
-                    class: (o.ordered) ? "btn-success" : "btn-default"
+                    class: getOrderClass(o)
                 });
             }
             

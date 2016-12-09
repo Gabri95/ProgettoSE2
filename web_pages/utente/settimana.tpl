@@ -5,7 +5,8 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.css">
 		
-		
+		<link rel="stylesheet" href="/styles/style.css">
+        
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<title>Settimana</title>
@@ -13,19 +14,18 @@
 	<body>
 		
 		
-		<div class="container col-md-4 col-md-offset-4" style = "background-color: lightcyan; text-align: center; padding: 0%">
+		<div class="container col-xs-4 col-xs-offset-4 col-xs-4 col-xs-offset-4">
 			
 			(:file ~ ./web_pages/utente/header.tpl:)
-            <div class="jumbotron" style = "background-color: lightcyan;">
+            <div class="jumbotron week">
 				
 				
 				(:days ~
 				
 					<div class="row">
-						<div class="col-md-10 col-md-offset-1">
+						<div class="day col-xs-12 col-md-12">
 								<a href="/day?year=[: year :]&month=[: month :]&day=[: day :]" 
-									class="btn [: class :]" 
-									style=" width: 100%; padding: 10%; margin-bottom: 10%;font-size:2em; text-align: center ">
+									class="btn [: class :]">
 										[: name :] [: day :]/[: month :]
 								</a>
 						</div>

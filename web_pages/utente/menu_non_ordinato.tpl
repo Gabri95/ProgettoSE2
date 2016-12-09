@@ -24,7 +24,7 @@
             <div class="container-fluid" id ="startView">
 				
                 <div class="row">
-                    <div class="panel panel-default">
+                    <div class="panel">
                         <div class="panel-heading">
                             <h2><i>Lo Chef consiglia...</i></h2>
                         </div>

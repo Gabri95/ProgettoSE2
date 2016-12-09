@@ -21,7 +21,7 @@
             <div class="container-fluid">
                 <div class="row">
                     
-                        <div class="panel panel-default">
+                        <div class="panel">
                             <div class="panel-heading">
                                 <h2><i>(: place_phrase :)</i></h2>
                             </div>

@@ -5,6 +5,7 @@
 		<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
 		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.css">
 		
+        <link rel="stylesheet" href="/styles/style.css">
 		
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
@@ -13,74 +14,72 @@
 	<body>
 		
 		
-		<div class="container col-md-4 col-md-offset-4" style = "background-color: lightcyan; text-align: center; padding: 0%">
+		<div class="container col-md-4 col-md-offset-4">
 			(:file ~ ./web_pages/utente/header.tpl:)
 			(:file ~ ./web_pages/utente/menu_header.tpl:)
 			
-            <div class="jumbotron" style = "background-color: lightcyan; text-align: left; margin: 0px;">
-                
-				(: order ~
-                    <div class="row">
-                        <div class="col-xs-2 col-xs-offset-10">
-                            <span><h3><i>[: place :]</i></h3></span>
-                        </div>
-                    </div>
-					[: first ~
-						<div class="row">
-							<h2>Primi</h2>
-						</div>
-						<div class="row">
-							<div class="col-xs-6">
-								<span><h3><i>{: name :}</i></h3></span> 
-							</div>
-							<div class="col-xs-6">
-								<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
-							</div>
-						</div>
-					
-					:]
-					[: second ~
-						<div class="row">
-							<h2>Secondi</h2>
-						</div>
-						<div class="row">
-							<div class="col-xs-6">
-								<span><h3><i>{: name :}</i></h3></span> 
-							</div>
-							<div class="col-xs-6">
-								<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
-							</div>
-						</div>
-					
-					:]
-					[: side ~
-						<div class="row">
-							<h2>Contorni</h2>
-						</div>
-						<div class="row">
-							<div class="col-xs-6">
-								<span><h3><i>{: name :}</i></h3></span> 
-							</div>
-							<div class="col-xs-6">
-								<img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
-							</div>
-						</div>
-					
-					:]
-					
+            <div class="container-fluid">
+                <div class="row">
+                    
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h2><i>(: place_phrase :)</i></h2>
+                            </div>
+                            <div class="panel-body">
+                            (: order ~
+                                [: first ~
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <span><h3><i>{: name :}</i></h3></span>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
+                                        </div>
+                                    </div>
+                                :]
+                                [: second ~
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <span><h3><i>{: name :}</i></h3></span>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
+                                        </div>
+                                    </div>
+                                :]
+                                [: side ~
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <span><h3><i>{: name :}</i></h3></span>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
+                                        </div>
+                                    </div>
+                                :]
+                                [: dessert ~
+                                    <div class="row">
+                                        <div class="col-xs-6">
+                                            <span><h3><i>{: name :}</i></h3></span>
+                                        </div>
+                                        <div class="col-xs-6">
+                                            <img src="/photos/{: id :}.jpg" class="img-rounded" alt="{: name :}" width="150" height="90">
+                                        </div>
+                                    </div>
+                                :]
+                            :)
+                            </div>
 
-				:)
-				<div class="row" style="padding: 5% 0%; margin-top: 5%">
-                    <div class="col-md-6 col-md-offset-3">
-                        <a href="(: day ~ /edit?year=[: year :]&month=[: month :]&day=[: day :] :)" 
-                           class="btn btn-default"
-                           style="width: 100%; padding: 10%; margin: 0px; font-size:2em" >
-                            MODIFICA
-                        </a>
-                        
-                    </div>
+                        </div>
+                    
                 </div>
-                
+                <div class="row centeredButton">
+                    <a href="(: day ~ /order?year=[: year :]&month=[: month :]&day=[: day :] :)" 
+                       class="btn btn-default">
+                       <!--style="width: 100%; padding: 10%; margin: 0px; font-size:2em" >-->
+                        MODIFICA
+                    </a>
+                </div>
             </div>
         </div>
 

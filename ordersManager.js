@@ -1,33 +1,38 @@
 
 //connect DB
 var pg = require('pg');
+var utility = require('./utility.js');
 var dishesManager = require('./dishesManager.js');
 
 
-function Order(user, date, first, second, side, place){
+function Order(user, date, first, second, side, dessert, place){
 	this.user = user;
 	this.date = date;
 	this.first = first;
 	this.second = second;
 	this.side = side;
+    this.dessert = dessert;
     this.place = place;
 };
 
 
 
-function makeOrder(user, date, first, second, side, place, callback){
+function makeOrder(user, date, first, second, side, dessert, place, callback){
     
     first = (first == 'undefined' || !checkIfNormalInteger(first)) ? null : parseInt(first);
     second = (second == 'undefined' || !checkIfNormalInteger(second)) ? null : parseInt(second);
     side = (side == 'undefined' || !checkIfNormalInteger(side)) ? null : parseInt(side);
+    dessert = (dessert == 'undefined' || !checkIfNormalInteger(dessert)) ? null : parseInt(dessert);
     place = (place == 'mensa') ? 'mensa' : 'domicilio';
+    
+    
     
     pg.connect(process.env.DATABASE_URL, function(err, client, done) {
 		
 		//add order
 		client.query(
-            'INSERT INTO foodapp.orders VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (username, date) DO UPDATE SET	first = EXCLUDED.first, second = EXCLUDED.second, side = EXCLUDED.side, place = EXCLUDED.place',
-            [user, date, first, second, side, place], function(err, result) {
+            'INSERT INTO foodapp.orders VALUES ($1, $2, $3, $4, $5, $6, $7) ON CONFLICT (username, date) DO UPDATE SET first = EXCLUDED.first, second = EXCLUDED.second, side = EXCLUDED.side, dessert = EXCLUDED.dessert, place = EXCLUDED.place',
+            [user, date, first, second, side, dessert, place], function(err, result) {
 		  done();
 		  if (err) { 
 			  console.error(err);
@@ -39,6 +44,8 @@ function makeOrder(user, date, first, second, side, place, callback){
     
 }
 
+
+
 function getOrder(user, date, callback){
 	//connect to database
 	pg.connect(
@@ -48,11 +55,13 @@ function getOrder(user, date, callback){
 		//query
 		client.query('SELECT O.place, F.id as f_id, F.name as f_name, F.description as f_des, '+
                             'S.id as s_id, S.name as s_name, S.description as s_des, ' +
-                            'C.id as c_id, C.name as c_name, C.description as c_des ' +
+                            'C.id as c_id, C.name as c_name, C.description as c_des, ' +
+                            'D.id as d_id, D.name as d_name, D.description as d_des ' +
                     'FROM foodapp.orders O ' + 
                                 'LEFT OUTER JOIN foodapp.dishes F ON (O.first = F.id) ' +
                                 'LEFT OUTER JOIN foodapp.dishes S ON (O.second = S.id) ' +
                                 'LEFT OUTER JOIN foodapp.dishes C ON (O.side = C.id) ' +
+                                'LEFT OUTER JOIN foodapp.dishes D ON (O.dessert = D.id) ' +
                     'WHERE O.username = $1 AND O.date = $2', 
                      [user, date],
                      function(err, result) {
@@ -69,6 +78,7 @@ function getOrder(user, date, callback){
                                   (r.f_id != null) ? new dishesManager.Dish(r.f_id, r.f_name, r.f_des, null, null) : null,
                                   (r.s_id != null) ? new dishesManager.Dish(r.s_id, r.s_name, r.s_des, null, null) : null, 
                                   (r.c_id != null) ? new dishesManager.Dish(r.c_id, r.c_name, r.c_des, null, null) : null,
+                                  (r.d_id != null) ? new dishesManager.Dish(r.d_id, r.d_name, r.d_des, null, null) : null,
                                   r.place);
                 
 		  	}
@@ -134,17 +144,17 @@ function getNearDays(user, today, p, f, callback){
 		        
 		            var o = orders[i];
 
-		            days.push({
-		                name: days_name[o.date.getDay()],
-		                day: o.date.getDate(),
-		                month: o.date.getMonth()+1,
-		                year: o.date.getYear(),
-		                class: (o.ordered) ? "btn-success" : "btn-default"
-		            });
-		        }
-		        
-		    }
-		    
+                days.push({
+                    name: utility.toDayName(o.date.getDay()),
+                    day: o.date.getDate(),
+                    month: o.date.getMonth()+1,
+                    year: o.date.getFullYear(),
+                    class: (o.ordered) ? "btn-success" : "btn-default"
+                });
+            }
+            
+        }
+        
 
 		    callback(err, days);        
 		});
@@ -169,7 +179,7 @@ function checkIfNormalInteger(str) {
 
 
 
-var days_name = ["domenica", "lunedì", "martedì", "mercoledì", "giovedì", "venerdì", "sabato"];
+
 
 
 function followingDay(day, n){
@@ -198,7 +208,7 @@ function pgFormatDate(date) {
 
   var parsed = new Date(date)
 
-  return [parsed.getUTCFullYear(), zeroPad(parsed.getMonth() + 1), zeroPad(parsed.getDate())].join("-");
+  return [parsed.getFullYear(), zeroPad(parsed.getMonth() + 1), zeroPad(parsed.getDate())].join("-");
 }
 
 
@@ -208,3 +218,4 @@ exports.Order = Order;
 exports.getNearDays = getNearDays;
 exports.makeOrder = makeOrder;
 exports.getOrder = getOrder;
+exports.getOrders = getOrders;

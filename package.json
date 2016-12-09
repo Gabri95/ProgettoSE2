@@ -21,6 +21,7 @@
     "bind": "^0.1.7",
     "body-parser": "^1.15.2",
     "cookie-parser": "^1.4.3",
+    "cors": "^2.8.1",
     "express": "^4.14.0",
     "express-session": "^1.14.2",
     "path": "^0.12.7",

@@ -9,14 +9,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/Gabri95/ProgettoSE2.git"
+    "url": "git+https://github.com/Gabri95/SE2_16_171858_P.git"
   },
   "author": "Gabriele Cesa",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/Gabri95/ProgettoSE2/issues"
+    "url": "https://github.com/Gabri95/SE2_16_171858_P/issues"
   },
-  "homepage": "https://github.com/Gabri95/ProgettoSE2#readme",
+  "homepage": "https://github.com/Gabri95/SE2_16_171858_P#readme",
   "dependencies": {
     "bind": "^0.1.7",
     "body-parser": "^1.15.2",

@@ -351,7 +351,7 @@ app.get('/order', sessionManager.isLogged, function(request, response){
 	}else{
         
         var date = new Date(year, month-1, day, 0, 0, 0, 0);
-        console.log(date);
+        
         ordersManager.getOrder(request.session.user.username, date, function(err, order){
 
            if(err){

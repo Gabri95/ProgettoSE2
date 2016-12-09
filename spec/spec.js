@@ -150,6 +150,7 @@ describe("Test ordersManager: ", function(){
                                                               null,
                                                               new dishesManager.Dish(5, 'fritto misto', 'Tipico piatto italiano', null, null),
                                                               new dishesManager.Dish(7, 'patatine fritte', 'Tipico piatto italiano', null, null),
+                                                              new dishesManager.Dish(9, 'macedonia', 'Tipico piatto italiano', null, null),
                                                               "mensa"));
                 done();
             });
@@ -163,7 +164,7 @@ describe("Test ordersManager: ", function(){
         
         it(" check if order inserted", function(done){
             
-            ordersManager.makeOrder('gabri', day, null, 5, 7, 'mensa', function(err){
+            ordersManager.makeOrder('gabri', day, null, 5, 7, 9, 'mensa', function(err){
                 expect(err).toBeNull();
                 
                 ordersManager.getOrder('gabri', day, function(err, order){
@@ -174,6 +175,7 @@ describe("Test ordersManager: ", function(){
                                                               null,
                                                               new dishesManager.Dish(5, 'fritto misto', 'Tipico piatto italiano', null, null),
                                                               new dishesManager.Dish(7, 'patatine fritte', 'Tipico piatto italiano', null, null),
+                                                              new dishesManager.Dish(9, 'macedonia', 'Tipico piatto italiano', null, null),
                                                               "mensa"));
                     done(); 
                 });
@@ -185,7 +187,7 @@ describe("Test ordersManager: ", function(){
         
         it(" check if order overwritten", function(done){
             
-            ordersManager.makeOrder('gabri', day, 0, 3, null, 'domicilio', function(err){
+            ordersManager.makeOrder('gabri', day, 0, 3, null, null, 'domicilio', function(err){
                 expect(err).toBeNull();
                 
                 ordersManager.getOrder('gabri', day, function(err, order){
@@ -196,6 +198,7 @@ describe("Test ordersManager: ", function(){
                                                               new dishesManager.Dish(0, 'pasta al pomodoro', 'Tipico piatto italiano', null, null),
                                                               new dishesManager.Dish(3, 'bistecca', 'Tipico piatto italiano', null, null),
                                                               null,
+                                                              null,
                                                               "domicilio"));
                     done(); 
                 });
@@ -205,7 +208,7 @@ describe("Test ordersManager: ", function(){
         
         it(" check if invalid parameter", function(done){
             
-            ordersManager.makeOrder('gabri', day, 'a', 'undefined', -3, 'asnem', function(err){
+            ordersManager.makeOrder('gabri', day, 'a', 'undefined', -3, {prova: 'prova'}, 'asnem', function(err){
                 expect(err).toBeNull();
                 
                 ordersManager.getOrder('gabri', day, function(err, order){
@@ -216,6 +219,7 @@ describe("Test ordersManager: ", function(){
                     expect(order.first).toBe(null);
                     expect(order.second).toBe(null);
                     expect(order.side).toBe(null);
+                    expect(order.dessert).toBe(null);
                     expect(order.place).toEqual('domicilio');
                     done(); 
                 });
@@ -241,7 +245,7 @@ describe("Test ordersManager: ", function(){
                 expect(days[0].name).toBe(days_name[today.getDay()]);
                 expect(days[0].day).toBe(today.getDate());
                 expect(days[0].month).toBe(today.getMonth()+1);
-                expect(days[0].year).toBe(today.getYear());
+                expect(days[0].year).toBe(today.getFullYear());
 
                 done();
             });
@@ -255,7 +259,7 @@ describe("Test ordersManager: ", function(){
                 expect(days[p].name).toBe(days_name[today.getDay()]);
                 expect(days[p].day).toBe(today.getDate());
                 expect(days[p].month).toBe(today.getMonth()+1);
-                expect(days[p].year).toBe(today.getYear());
+                expect(days[p].year).toBe(today.getFullYear());
                 done();
             });
         });
@@ -267,7 +271,7 @@ describe("Test ordersManager: ", function(){
                 expect(days[0].name).toBe(days_name[today.getDay()]);
                 expect(days[0].day).toBe(today.getDate());
                 expect(days[0].month).toBe(today.getMonth()+1);
-                expect(days[0].year).toBe(today.getYear());
+                expect(days[0].year).toBe(today.getFullYear());
                 done();
             });
         });
@@ -315,9 +319,11 @@ describe("Test menuManager: ", function(){
                 expect(menu.firsts.length).toBe(0);
                 expect(menu.seconds.length).toBe(0);
                 expect(menu.sides.length).toBe(0);
+                expect(menu.desserts.length).toBe(0);
                 expect(menu.a_firsts.length).toBe(0);
                 expect(menu.a_seconds.length).toBe(0);
                 expect(menu.a_sides.length).toBe(0);
+                expect(menu.a_desserts.length).toBe(0);
                 done();
             });
         });
@@ -333,6 +339,98 @@ describe("Test menuManager: ", function(){
         
     });
     
+    describe(" on getSuggestedMenu", function(){
+        
+        it(" with existing day", function(done){
+            var date = new Date("December 03, 2016");
+            menuManager.getSuggestedMenu(date, function(err, menu){
+                expect(err).toBeNull();
+                expect(menu).not.toBeNull();
+                expect(menu.length).toBe(4);
+                done();
+            });
+            
+        });
+        
+        it(" with unexisting day", function(done){
+           var date = new Date("November 20, 2016");
+            menuManager.getSuggestedMenu(date, function(err, menu){
+                expect(err).toBeNull();
+                expect(menu).not.toBeNull();
+                expect(menu.length).toBe(0);
+                done();
+            });
+        });
+        
+        it(" with null", function(done){
+            menuManager.getSuggestedMenu(null, function(err, menu){
+                expect(err).toBeNull();
+                expect(menu).toBeNull();
+                done();
+            });
+        });
+            
+        
+    });
+    
+    
+    describe(" on getMenuDish", function(){
+        
+        it(" with existing day and dish", function(done){
+            var date = new Date("December 03, 2016");
+            menuManager.getMenuDish(date, 'primo', function(err, menu){
+                expect(err).toBeNull();
+                expect(menu).not.toBeNull();
+                expect(menu.suggested.length).toBe(1);
+                expect(menu.suggested[0].id).toBe(1);
+                expect(menu.alternatives.length).toBe(1);
+                expect(menu.alternatives[0].id).toBe(2);
+                
+                done();
+            });
+            
+        });
+        
+        it(" with unexisting day", function(done){
+            var date = new Date("November 20, 2016");
+            menuManager.getMenuDish(date, 'primo', function(err, menu){
+                expect(err).toBeNull();
+                expect(menu).not.toBeNull();
+                expect(menu.suggested.length).toBe(0);
+                expect(menu.alternatives.length).toBe(0);
+                done();
+            });
+        });
+        
+        it(" with date null", function(done){
+            menuManager.getMenuDish(null, 'primo', function(err, menu){
+                expect(err).toBeNull();
+                expect(menu).toBeNull();
+                done();
+            });
+        });
+        
+        it(" with dish null", function(done){
+            var date = new Date("December 03, 2016");
+            menuManager.getMenuDish(date, null, function(err, menu){
+                expect(err).toBeNull();
+                expect(menu).toBeNull();
+                done();
+            });
+        });
+            
+        it(" with dish invalid", function(done){
+            var date = new Date("December 03, 2016");
+            menuManager.getMenuDish(date, 'tsrif', function(err, menu){
+                expect(err).not.toBeNull();
+                expect(menu).not.toBeNull();
+                expect(menu.suggested.length).toBe(0);
+                expect(menu.alternatives.length).toBe(0);
+                done();
+            });
+        });
+        
+    });
     
 });
 

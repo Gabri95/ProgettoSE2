@@ -97,96 +97,108 @@ function getMenu(date, callback){
 
 
 function getSuggestedMenu(date, callback){
-    //connect to database
-	pg.connect(
-		//enviromental variable, set by heroku when first databse is created
-		process.env.DATABASE_URL, 
-		function(err, client, done) {
-                client.query('SELECT F.dish_id as id, F.dish as dish, D.name as name, D.description as description '+
-                             'FROM (SELECT dish_id, dish FROM foodapp.menu WHERE date = $1 AND suggested = true) as F '+
-                                    'JOIN foodapp.dishes D ON (F.dish_id = D.id) '+
-                             'ORDER BY dish', 
-                             [date], 
-                             function(err, result) {  
-                                //release the client back to the pool
-                                done();
-                                
-                                var menu = [];
-                                //manages err
-                                if (err){ 
-                                    console.log(err);
-                                } else if (result.rows.length > 0) {
-                                    var rows = result.rows;
+    
+    if(date != null){
+        //connect to database
+        pg.connect(
+            //enviromental variable, set by heroku when first databse is created
+            process.env.DATABASE_URL, 
+            function(err, client, done) {
+                    client.query('SELECT F.dish_id as id, F.dish as dish, D.name as name, D.description as description '+
+                                 'FROM (SELECT dish_id, dish FROM foodapp.menu WHERE date = $1 AND suggested = true) as F '+
+                                        'JOIN foodapp.dishes D ON (F.dish_id = D.id) '+
+                                 'ORDER BY dish', 
+                                 [date], 
+                                 function(err, result) {  
+                                    //release the client back to the pool
+                                    done();
 
-                                    for(var i =0; i<rows.length; i++){
-                                        var d = rows[i];
-                                        var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
-                                        
-                                        menu.push(dish);
+                                    var menu = [];
+                                    //manages err
+                                    if (err){ 
+                                        console.log(err);
+                                    } else if (result.rows.length > 0) {
+                                        var rows = result.rows;
+
+                                        for(var i =0; i<rows.length; i++){
+                                            var d = rows[i];
+                                            var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
+
+                                            menu.push(dish);
+                                        }
+
                                     }
 
+                                    callback(err, menu);
                                 }
-                    
-                                callback(err, menu);
-                            }
-                );
-  	     }
-    );
+                    );
+             }
+        );
+    }else{
+        callback(null, null);
+    }
+    
 }
 
 
 
 function getMenuDish(date, dish, callback){
-    //connect to database
-	pg.connect(
-		//enviromental variable, set by heroku when first databse is created
-		process.env.DATABASE_URL, 
-		function(err, client, done) {
-                client.query('SELECT P.dish_id as id, P.suggested as suggested, D.name as name, D.description as description \
-                              FROM (SELECT dish_id, suggested FROM foodapp.menu WHERE date = $1 AND dish = $2) as P JOIN foodapp.dishes D ON (P.dish_id = D.id)', 
-                             [date, dish], 
-                             function(err, result) {  
-                                //release the client back to the pool
-                                done();
-                                
-                                var menu = {
-                                    suggested: [],
-                                    alternatives: []
-                                };  
-                                //manages err
-                                if (err){ 
-                                    console.log(err);
-                                } else if (result.rows.length > 0) {
-                                    var rows = result.rows;
-                                    
+    
+    if(date != null && dish != null){
+        //connect to database
+        pg.connect(
+            //enviromental variable, set by heroku when first databse is created
+            process.env.DATABASE_URL, 
+            function(err, client, done) {
+                    client.query('SELECT P.dish_id as id, P.suggested as suggested, D.name as name, D.description as description \
+                                  FROM (SELECT dish_id, suggested FROM foodapp.menu WHERE date = $1 AND dish = $2) as P JOIN foodapp.dishes D ON (P.dish_id = D.id)', 
+                                 [date, dish], 
+                                 function(err, result) {  
+                                    //release the client back to the pool
+                                    done();
 
-                                    for(var i =0; i<rows.length; i++){
-                                        var d = rows[i];
-                                        var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
-                                        var suggested = rows[i].suggested;
-                                        
-                                        if(suggested){
-                                            menu.suggested.push({
-                                                id: d.id,
-                                                name: d.name,
-                                                description: d.description
-                                            });
-                                        }else{
-                                            menu.alternatives.push({
-                                                id: d.id,
-                                                name: d.name,
-                                                description: d.description
-                                            });
+                                    var menu = {
+                                        suggested: [],
+                                        alternatives: []
+                                    };  
+                                    //manages err
+                                    if (err){ 
+                                        //console.log(err);
+                                    } else if (result.rows.length > 0) {
+                                        var rows = result.rows;
+
+
+                                        for(var i =0; i<rows.length; i++){
+                                            var d = rows[i];
+                                            var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
+                                            var suggested = rows[i].suggested;
+
+                                            if(suggested){
+                                                menu.suggested.push({
+                                                    id: d.id,
+                                                    name: d.name,
+                                                    description: d.description
+                                                });
+                                            }else{
+                                                menu.alternatives.push({
+                                                    id: d.id,
+                                                    name: d.name,
+                                                    description: d.description
+                                                });
+                                            }
                                         }
+
                                     }
 
+                                    callback(err, menu);
                                 }
-                    
-                                callback(err, menu);
-                            }
-                );
-  	     }
-    );
+                    );
+             }
+        );
+    }else{
+        callback(null, null);
+    }
+    
 }
 
 

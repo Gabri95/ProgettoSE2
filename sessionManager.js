@@ -19,13 +19,11 @@ function User(username, password, name, surname, address, phone, type, doctor){
 
 
 function authenticate(username, password, callback){
-    console.log(process.env.DATABASE_URL);
     //connect to database
 	pg.connect(
 		//enviromental variable, set by heroku when first databse is created
 		process.env.DATABASE_URL, 
 		function(err, client, done) {
-        console.log("connesso");
         if(err){
             console.log(err);
         }
@@ -44,7 +42,6 @@ function authenticate(username, password, callback){
 		  	} else if(result.rows.length > 0){
                 var r = result.rows[0];
                 u = new User(r.username, r.password, r.name, r.surname, r.address, r.phone, r.type, r.doctor);
-                console.log(u);
 		  	}
             
             callback(err, u);

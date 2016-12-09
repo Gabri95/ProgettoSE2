@@ -32,9 +32,7 @@ function makeOrder(user, date, first, second, side, place, callback){
 		  if (err) { 
 			  console.error(err);
               
-          }else {
-			  console.log("order inserted");
-		  }
+          }
           callback(err);
 		});
   	}); 
@@ -210,4 +208,3 @@ exports.Order = Order;
 exports.getNearDays = getNearDays;
 exports.makeOrder = makeOrder;
 exports.getOrder = getOrder;
-exports.getOrders = getOrders;

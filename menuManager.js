@@ -77,7 +77,7 @@ function getMenu(date, callback){
 		                                var rows = result.rows;
 		                                
 		                                //creo un nuovo oggetto Menu, in cui ogni lista è inizialmente vuota
-		                                menu = new Menu(date, [], [], [], [], [], []);
+		                                menu = new Menu(date, [], [], [], [], [], [], [], []);
 
 		                                for(var i =0; i<rows.length; i++){
 		                                    //per ogni riga, ovvero per ogni piatto trovato
@@ -126,7 +126,7 @@ function getMenu(date, callback){
 
 		                            }else{
 		                                //se non ho trovato nessun piatto ritorno un Menu con ogni lista vuota
-		                                menu = new Menu(date, [], [], [], [], [], []);
+		                                menu = new Menu(date, [], [], [], [], [], [], [], []);
 		                            }
 		                            
 		                            //In ogni caso richiamo la funzione di callback con l'eventuale errore riscontrato ed il menu
@@ -258,7 +258,8 @@ function getMenuDish(date, dish, callback){
 		                                //se abbiamo trovato almeno un risultato, inserisco i piatti corrispondenti nel menu da restituire
 		                                var rows = result.rows;
 		                                
-
+                                        
+                                        
 		                                for(var i =0; i<rows.length; i++){
 		                                    var d = rows[i];
 		                                    

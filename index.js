@@ -243,7 +243,7 @@ function returnJSON(response, obj) {
 /**
  * Ritorna sotto forma di JSON la lista dei piatti della portata specificata nei parametri di GET nel menu del giorno specificato.
  */
-app.get('/getdish', sessionManager.isLogged, function (request, response) {
+app.get('/getdish', function (request, response) {
     var url_parts = url.parse(request.url, true);
     //variabile che conterrà i parametri
     var getVar = url_parts.query;
@@ -255,18 +255,21 @@ app.get('/getdish', sessionManager.isLogged, function (request, response) {
     var dish = getVar.dish;
 
 
-    var day = new Date(parseInt(year), month - 1, day, 0, 0, 0, 0);
+    var day = new Date(year, month - 1, day, 0, 0, 0, 0);
 
     if (!utility.isValidDate(day) || dish == 'undefined' ||
         (dish != 'primo' && dish != 'secondo' && dish != 'contorno' && dish != 'dessert')) {
+        console.log(day);
+        console.log(dish);
         //nel caso alcuni dei parametri non siano validi ritorniamo un oggetto con le liste vuote.
         returnJSON(response, {
             suggested: [],
             alternatives: []
         });
     } else {
+        console.log(day);
         menuManager.getMenuDish(day, dish, function (err, menu) {
-
+            console.log(menu);
             returnJSON(response, menu);
         });
     }

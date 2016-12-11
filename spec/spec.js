@@ -1,18 +1,26 @@
 
 var request = require("request");
 var requestJSON = require("request-json");
+var pg = require("pg");
 
 var sessionManager = require("../sessionManager.js");
 var ordersManager = require("../ordersManager.js");
 var menuManager = require("../menuManager.js");
 var dishesManager = require("../dishesManager.js");
+var utility = require("../utility.js");
 
 process.env.DATABASE_URL=process.env.DATABASE_URL+'?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
 console.log(process.env.DATABASE_URL);
  
 var base_url = "http://localhost:5000";
+
+
+/*
+*   N.B.: SI RACCOMANDA DI REINIZIALIZZARE IL DATABASE PRIMA DI ESEGUIRE IL TEST
+*   È POSSIBILE UTILIZZARE I COMANDI NEI FILE *.sql DISPONIBILI NELLA CARTELLA "db"
+*/
  
-describe("Test authentication:", function() {
+describe("Test authentication: ", function() {
     
     it("on not logged user redirect to /start", function(done) {
         request.get(
@@ -72,6 +80,119 @@ describe("Test authentication:", function() {
 });
 
 
+describe("Test /getdish AJAX call: ", function() {
+    
+    var client = requestJSON.createClient(base_url);
+    
+    
+    
+    describe("on invalid parameters ", function() {
+		
+        describe("on invalid date", function(){
+            var data = {year: "2016", month: "12", day: "wrong", dish: "primo"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish, 
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        
+                        var data = body; 
+                    
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+        
+        describe("on invalid dish", function(){
+            var data = {year: "2016", month: "12", day: "2", dish: "wrong"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        var data = body;
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+        
+        describe("on missing dish", function(){
+            var data = {year: "2016", month: "12", day: "2"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        var data = body; 
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+    
+    });
+    
+    describe("on correct parameters ", function() {
+		
+        describe("on inexisting menu", function(){
+            var data = {year: "2018", month: "12", day: "5", dish: "primo"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        var data = body; 
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+        
+        describe("on existing menu", function(){
+            var data = {year: 2016, month: 12, day: 5, dish: "primo"};
+            it(" return non-empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBeNull();
+                        var data = body;
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(2);
+                        expect(data.alternatives.length).toBe(0);
+                        expect(data.suggested[0]).toEqual({id: 2, name: 'tortelli di zucca', description: 'Tipico piatto italiano'});    
+                        expect(data.suggested[1]).toEqual({id: 0, name: 'pasta al pomodoro', description: 'Tipico piatto italiano'});
+                        
+                        done();
+                    });
+            }); 
+        });
+        
+    
+    });
+    
+    
+});
+
 
 describe("Test sessionManager: ", function(){
     
@@ -89,8 +210,6 @@ describe("Test sessionManager: ", function(){
                     expect(user.surname).toBe('Cesa');
                     expect(user.address).toBe('via Benzoni 36');
                     expect(user.phone).toBe('12345678');
-                    expect(user.type).toBe('user');
-                    expect(user.doctor).toBeNull();
                     done();
                 });
                 
@@ -123,6 +242,10 @@ describe("Test sessionManager: ", function(){
 
 describe("Test ordersManager: ", function(){
     
+    //inserisco in una data molto lontana da quella odierna, dove so che non esiste nessun ordine
+    var unexistingOrderDate = utility.followingDay(new Date(), 100);
+        
+        
     
     describe("on getOrder", function(){
         
@@ -135,7 +258,7 @@ describe("Test ordersManager: ", function(){
         });
         
         it(" with unexisting order", function(done){
-            ordersManager.getOrder('gabri', new Date("November 20, 2016"), function(error, order){
+            ordersManager.getOrder('gabri', unexistingOrderDate, function(error, order){
                 expect(order).toBeNull();
                 done();
             });
@@ -160,18 +283,19 @@ describe("Test ordersManager: ", function(){
     });
     
     describe(" on makeOrder", function(){
-        var day =  new Date("November 20, 2017");
+        
         
         it(" check if order inserted", function(done){
-            
-            ordersManager.makeOrder('gabri', day, null, 5, 7, 9, 'mensa', function(err){
+            //se i test precedenti sono andati a buon fine, allora nel giorno "unexistingOrderDate" non è presente nessun ordine
+            ordersManager.makeOrder('gabri', unexistingOrderDate, null, 5, 7, 9, 'mensa', function(err){
                 expect(err).toBeNull();
                 
-                ordersManager.getOrder('gabri', day, function(err, order){
+                //controllo se ora invece è presente
+                ordersManager.getOrder('gabri', unexistingOrderDate, function(err, order){
                     expect(err).toBeNull();
                     expect(order).not.toBeNull();
                     expect(order).toEqual(new ordersManager.Order('gabri',
-                                                              day,
+                                                              unexistingOrderDate,
                                                               null,
                                                               new dishesManager.Dish(5, 'fritto misto', 'Tipico piatto italiano', null, null),
                                                               new dishesManager.Dish(7, 'patatine fritte', 'Tipico piatto italiano', null, null),
@@ -186,15 +310,15 @@ describe("Test ordersManager: ", function(){
         });
         
         it(" check if order overwritten", function(done){
-            
-            ordersManager.makeOrder('gabri', day, 0, 3, null, null, 'domicilio', function(err){
+            //ora l'ordine dovrebb essere presente. Controlliamo se viene sovrascritto
+            ordersManager.makeOrder('gabri', unexistingOrderDate, 0, 3, null, null, 'domicilio', function(err){
                 expect(err).toBeNull();
                 
-                ordersManager.getOrder('gabri', day, function(err, order){
+                ordersManager.getOrder('gabri', unexistingOrderDate, function(err, order){
                     expect(err).toBeNull();
                     expect(order).not.toBeNull();
                     expect(order).toEqual(new ordersManager.Order('gabri',
-                                                              day,
+                                                              unexistingOrderDate,
                                                               new dishesManager.Dish(0, 'pasta al pomodoro', 'Tipico piatto italiano', null, null),
                                                               new dishesManager.Dish(3, 'bistecca', 'Tipico piatto italiano', null, null),
                                                               null,
@@ -208,14 +332,14 @@ describe("Test ordersManager: ", function(){
         
         it(" check if invalid parameter", function(done){
             
-            ordersManager.makeOrder('gabri', day, 'a', 'undefined', -3, {prova: 'prova'}, 'asnem', function(err){
+            ordersManager.makeOrder('gabri', unexistingOrderDate, 'a', 'undefined', -3, {prova: 'prova'}, 'asnem', function(err){
                 expect(err).toBeNull();
                 
-                ordersManager.getOrder('gabri', day, function(err, order){
+                ordersManager.getOrder('gabri', unexistingOrderDate, function(err, order){
                     expect(err).toBeNull();
                     expect(order).not.toBeNull();
                     expect(order.user).toBe('gabri');
-                    expect(order.date).toEqual(day);
+                    expect(order.date).toEqual(unexistingOrderDate);
                     expect(order.first).toBe(null);
                     expect(order.second).toBe(null);
                     expect(order.side).toBe(null);
@@ -228,6 +352,31 @@ describe("Test ordersManager: ", function(){
             
         });
         
+        it(" check if late order denied", function(done){
+            //provo a fare un ordine per domani
+            //l'ordine dovrebbe venire rifiutato
+            var tomorrow = utility.followingDay(new Date(), 1);
+            ordersManager.makeOrder('gabri', tomorrow, null, 5, 7, 9, 'mensa', function(err){
+                expect(err).toBeNull();
+                
+                //controllo se l'ordine di domani è quello che mi aspettavo
+                ordersManager.getOrder('gabri', unexistingOrderDate, function(err, order){
+                    expect(err).toBeNull();
+                    //l'ordine trovato non dovrebbe essere quello inserito (può essere null o un altro ordine in base a cosa era già presente)
+                    expect(order).not.toEqual(new ordersManager.Order('gabri',
+                                                              unexistingOrderDate,
+                                                              null,
+                                                              new dishesManager.Dish(5, 'fritto misto', 'Tipico piatto italiano', null, null),
+                                                              new dishesManager.Dish(7, 'patatine fritte', 'Tipico piatto italiano', null, null),
+                                                              new dishesManager.Dish(9, 'macedonia', 'Tipico piatto italiano', null, null),
+                                                              "mensa"));
+                    done(); 
+                });
+                
+            });
+            
+            
+        });
         
             
         

@@ -155,7 +155,7 @@ function generateDishRow(dish, selectable) {
         .attr("dishid", dish.id)
         .text(dish.name);
 
-    if (selected) {
+    if (selectable) {
         i.addClass("dish").css("cursor", "pointer");
     }
 

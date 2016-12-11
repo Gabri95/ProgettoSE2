@@ -122,11 +122,13 @@ function makeOrder(user, date, first, second, side, dessert, place, callback) {
  *                            rispettivamente l'eventuale errore riscontrato e l'ordine effettuato
  */
 function getOrder(user, date, callback) {
-    //connect to database
-    pg.connect(
-        //enviromental variable, set by heroku when first databse is created
-        process.env.DATABASE_URL,
-        function (err, client, done) {
+    
+    if(date != null){
+        //connect to database
+        pg.connect(
+            //enviromental variable, set by heroku when first databse is created
+            process.env.DATABASE_URL,
+            function (err, client, done) {
             if (err) {
                 //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
                 console.error(err);
@@ -172,6 +174,9 @@ function getOrder(user, date, callback) {
                 );
             }
         });
+    }else{
+        callback(null, null);
+    }
 }
 
 /**
@@ -193,11 +198,13 @@ function getOrder(user, date, callback) {
  *                              rispettivamente l'eventuale errore riscontrato e la lista dei giorni
  */
 function getOrders(user, start_date, end_date, callback) {
-    //connect to database
-    pg.connect(
-        //enviromental variable, set by heroku 
-        process.env.DATABASE_URL,
-        function (err, client, done) {
+    
+    if(start_date != null && end_date != null){
+        //connect to database
+        pg.connect(
+            //enviromental variable, set by heroku 
+            process.env.DATABASE_URL,
+            function (err, client, done) {
             if (err) {
                 //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
                 console.error(err);
@@ -234,6 +241,9 @@ function getOrders(user, start_date, end_date, callback) {
                 );
             }
         });
+    }else{
+        callback(null, []);
+    }
 }
 
 
@@ -263,6 +273,9 @@ function getOrderClass(order) {
  * Il metodo controlla se l'utente corrispondente allo username ha effettuato un ordine per ognuno dei giorni compresi tra il p-esimo
  * giorno precedente a quello specificato ed il f-esimo successivo.
  * 
+ * Se il giorno specificato è null, viene richiamata immediatamente la funzione di callback con entrambi i parametri null.
+ * Se i parametri p e f sono negativi vengono impostati a 0.
+ * 
  * Se non si verificano errori verrà passato come parametro alla funzione di callback una lista di oggetti, uno per ogni giorno, ognuno contenente:
  *    - il nome del giorno 
  *    - il numero del giorno
@@ -283,9 +296,13 @@ function getOrderClass(order) {
  */
 function getNearDays(user, today, p, f, callback) {
 
-    //utilizzo il metodo getOrders per interfacciarmi con il database e contollare in quali giorni è già stato effettuato un ordine
-    getOrders(user, utility.previousDay(today, p), utility.followingDay(today, f), function (err, orders) {
-
+    if(today != null){
+		if(p < 0) { p = 0; }
+		if(f < 0) { f = 0; }
+        
+        //utilizzo il metodo getOrders per interfacciarmi con il database e contollare in quali giorni è già stato effettuato un ordine
+        getOrders(user, utility.previousDay(today, p), utility.followingDay(today, f), function (err, orders) {
+        
         var days = [];
 
         if (err == null) {
@@ -310,6 +327,9 @@ function getNearDays(user, today, p, f, callback) {
         //In ogni caso richiamo la funzione di callback passandogli l'eventuale errore e la lista di giorni (eventualmente anche vuota)
         callback(err, days);
     });
+    }else{
+        callback(null, null);
+    }
 }
 
 

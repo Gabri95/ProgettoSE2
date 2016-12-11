@@ -122,59 +122,59 @@ function makeOrder(user, date, first, second, side, dessert, place, callback) {
  *                            rispettivamente l'eventuale errore riscontrato e l'ordine effettuato
  */
 function getOrder(user, date, callback) {
-    
-    if(date != null){
+
+    if (date != null) {
         //connect to database
         pg.connect(
             //enviromental variable, set by heroku when first databse is created
             process.env.DATABASE_URL,
             function (err, client, done) {
-            if (err) {
-                //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
-                console.error(err);
-                callback(err);
-            } else {
-                //nel caso la connessione sia andata a buon fine eseguiamo la query
-                client.query('SELECT O.place, F.id as f_id, F.name as f_name, F.description as f_des, ' +
-                    'S.id as s_id, S.name as s_name, S.description as s_des, ' +
-                    'C.id as c_id, C.name as c_name, C.description as c_des, ' +
-                    'D.id as d_id, D.name as d_name, D.description as d_des ' +
-                    'FROM foodapp.orders O ' +
-                    'LEFT OUTER JOIN foodapp.dishes F ON (O.first = F.id) ' +
-                    'LEFT OUTER JOIN foodapp.dishes S ON (O.second = S.id) ' +
-                    'LEFT OUTER JOIN foodapp.dishes C ON (O.side = C.id) ' +
-                    'LEFT OUTER JOIN foodapp.dishes D ON (O.dessert = D.id) ' +
-                    'WHERE O.username = $1 AND O.date = $2', [user, date],
-                    function (err, result) {
+                if (err) {
+                    //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
+                    console.error(err);
+                    callback(err);
+                } else {
+                    //nel caso la connessione sia andata a buon fine eseguiamo la query
+                    client.query('SELECT O.place, F.id as f_id, F.name as f_name, F.description as f_des, ' +
+                        'S.id as s_id, S.name as s_name, S.description as s_des, ' +
+                        'C.id as c_id, C.name as c_name, C.description as c_des, ' +
+                        'D.id as d_id, D.name as d_name, D.description as d_des ' +
+                        'FROM foodapp.orders O ' +
+                        'LEFT OUTER JOIN foodapp.dishes F ON (O.first = F.id) ' +
+                        'LEFT OUTER JOIN foodapp.dishes S ON (O.second = S.id) ' +
+                        'LEFT OUTER JOIN foodapp.dishes C ON (O.side = C.id) ' +
+                        'LEFT OUTER JOIN foodapp.dishes D ON (O.dessert = D.id) ' +
+                        'WHERE O.username = $1 AND O.date = $2', [user, date],
+                        function (err, result) {
 
-                        //release the client back to the pool
-                        done();
+                            //release the client back to the pool
+                            done();
 
-                        var order = null;
+                            var order = null;
 
-                        if (err) {
-                            //in caso di errore lo stampiamo
-                            console.error(err);
-                        } else if (result.rows.length > 0) {
-                            //nel caso sia stato trovato almeno un risultato, prendiamo il primo
-                            var r = result.rows[0];
-                            order = new Order(user,
-                                date,
-                                (r.f_id != null) ? new dishesManager.Dish(r.f_id, r.f_name, r.f_des, null, null) : null,
-                                (r.s_id != null) ? new dishesManager.Dish(r.s_id, r.s_name, r.s_des, null, null) : null,
-                                (r.c_id != null) ? new dishesManager.Dish(r.c_id, r.c_name, r.c_des, null, null) : null,
-                                (r.d_id != null) ? new dishesManager.Dish(r.d_id, r.d_name, r.d_des, null, null) : null,
-                                r.place);
+                            if (err) {
+                                //in caso di errore lo stampiamo
+                                console.error(err);
+                            } else if (result.rows.length > 0) {
+                                //nel caso sia stato trovato almeno un risultato, prendiamo il primo
+                                var r = result.rows[0];
+                                order = new Order(user,
+                                    date,
+                                    (r.f_id != null) ? new dishesManager.Dish(r.f_id, r.f_name, r.f_des, null, null) : null,
+                                    (r.s_id != null) ? new dishesManager.Dish(r.s_id, r.s_name, r.s_des, null, null) : null,
+                                    (r.c_id != null) ? new dishesManager.Dish(r.c_id, r.c_name, r.c_des, null, null) : null,
+                                    (r.d_id != null) ? new dishesManager.Dish(r.d_id, r.d_name, r.d_des, null, null) : null,
+                                    r.place);
+
+                            }
+                            //in ogni caso richiamiamo la funzione di callback passandogli l'eventuale errore verificato e l'eventuale ordine trovato
+                            callback(err, order);
 
                         }
-                        //in ogni caso richiamiamo la funzione di callback passandogli l'eventuale errore verificato e l'eventuale ordine trovato
-                        callback(err, order);
-
-                    }
-                );
-            }
-        });
-    }else{
+                    );
+                }
+            });
+    } else {
         callback(null, null);
     }
 }
@@ -198,50 +198,50 @@ function getOrder(user, date, callback) {
  *                              rispettivamente l'eventuale errore riscontrato e la lista dei giorni
  */
 function getOrders(user, start_date, end_date, callback) {
-    
-    if(start_date != null && end_date != null){
+
+    if (start_date != null && end_date != null) {
         //connect to database
         pg.connect(
             //enviromental variable, set by heroku 
             process.env.DATABASE_URL,
             function (err, client, done) {
-            if (err) {
-                //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
-                console.error(err);
-                callback(err, []);
-            } else {
-                //nel caso la connessione sia andata a buon fine eseguiamo la query
-                client.query("SELECT D.date, O.date as ordered " +
-                    "FROM generate_series($2::date, $3::date, '1 day'::interval) D LEFT OUTER JOIN (SELECT * FROM foodapp.orders WHERE username = $1) O ON (D.date = O.date) " +
-                    "ORDER BY D.date", [user, utility.pgFormatDate(start_date), utility.pgFormatDate(end_date)],
-                    function (err, result) {
-                        //release the client back to the pool
-                        done();
+                if (err) {
+                    //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
+                    console.error(err);
+                    callback(err, []);
+                } else {
+                    //nel caso la connessione sia andata a buon fine eseguiamo la query
+                    client.query("SELECT D.date, O.date as ordered " +
+                        "FROM generate_series($2::date, $3::date, '1 day'::interval) D LEFT OUTER JOIN (SELECT * FROM foodapp.orders WHERE username = $1) O ON (D.date = O.date) " +
+                        "ORDER BY D.date", [user, utility.pgFormatDate(start_date), utility.pgFormatDate(end_date)],
+                        function (err, result) {
+                            //release the client back to the pool
+                            done();
 
-                        var orders = [];
+                            var orders = [];
 
-                        if (err) {
-                            //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
-                            console.error(err);
-                        } else if (result.rows.length > 0) {
-                            //nel caso sia stato trovato almeno un risultato prepariamo l'oggetto da ritornare
-                            for (var i = 0; i < result.rows.length; i++) {
-                                var r = result.rows[i];
-                                orders.push({
-                                    date: r.date,
-                                    ordered: (r.ordered != null) ? true : false
-                                });
+                            if (err) {
+                                //in caso di errore lo stampiamo e richiamiamo la funzione di callback passandogli l'errore verificato.
+                                console.error(err);
+                            } else if (result.rows.length > 0) {
+                                //nel caso sia stato trovato almeno un risultato prepariamo l'oggetto da ritornare
+                                for (var i = 0; i < result.rows.length; i++) {
+                                    var r = result.rows[i];
+                                    orders.push({
+                                        date: r.date,
+                                        ordered: (r.ordered != null) ? true : false
+                                    });
+                                }
+
                             }
+                            //in ogni caso richiamiamo la funzione di callback passandogli l'eventuale errore verificato e la lista di giorni (eventualmente vuota)
+                            callback(err, orders);
 
                         }
-                        //in ogni caso richiamiamo la funzione di callback passandogli l'eventuale errore verificato e la lista di giorni (eventualmente vuota)
-                        callback(err, orders);
-
-                    }
-                );
-            }
-        });
-    }else{
+                    );
+                }
+            });
+    } else {
         callback(null, []);
     }
 }
@@ -296,39 +296,43 @@ function getOrderClass(order) {
  */
 function getNearDays(user, today, p, f, callback) {
 
-    if(today != null){
-		if(p < 0) { p = 0; }
-		if(f < 0) { f = 0; }
-        
-        //utilizzo il metodo getOrders per interfacciarmi con il database e contollare in quali giorni è già stato effettuato un ordine
-        getOrders(user, utility.previousDay(today, p), utility.followingDay(today, f), function (err, orders) {
-        
-        var days = [];
-
-        if (err == null) {
-            //per ogni giorno ritornato da getOrders inserisco un nuovo oggetto nella lista da restituire
-            for (var i = 0; i < orders.length; i++) {
-
-                //prendo l'i-esimo elemento
-                var o = orders[i];
-
-                //inserisco nella lista l'oggetto che descrive l'i-esimo giorno
-                days.push({
-                    name: utility.toDayName(o.date.getDay()),
-                    day: o.date.getDate(),
-                    month: o.date.getMonth() + 1,
-                    year: o.date.getFullYear(),
-                    class: getOrderClass(o)
-                });
-            }
-
+    if (today != null) {
+        if (p < 0) {
+            p = 0;
+        }
+        if (f < 0) {
+            f = 0;
         }
 
-        //In ogni caso richiamo la funzione di callback passandogli l'eventuale errore e la lista di giorni (eventualmente anche vuota)
-        callback(err, days);
-    });
-    }else{
-        callback(null, null);
+        //utilizzo il metodo getOrders per interfacciarmi con il database e contollare in quali giorni è già stato effettuato un ordine
+        getOrders(user, utility.previousDay(today, p), utility.followingDay(today, f), function (err, orders) {
+
+            var days = [];
+
+            if (err == null) {
+                //per ogni giorno ritornato da getOrders inserisco un nuovo oggetto nella lista da restituire
+                for (var i = 0; i < orders.length; i++) {
+
+                    //prendo l'i-esimo elemento
+                    var o = orders[i];
+
+                    //inserisco nella lista l'oggetto che descrive l'i-esimo giorno
+                    days.push({
+                        name: utility.toDayName(o.date.getDay()),
+                        day: o.date.getDate(),
+                        month: o.date.getMonth() + 1,
+                        year: o.date.getFullYear(),
+                        class: getOrderClass(o)
+                    });
+                }
+
+            }
+
+            //In ogni caso richiamo la funzione di callback passandogli l'eventuale errore e la lista di giorni (eventualmente anche vuota)
+            callback(err, days);
+        });
+    } else {
+        callback(null, []);
     }
 }
 

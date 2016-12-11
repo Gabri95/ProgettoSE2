@@ -73,13 +73,15 @@
                         </div>
                     
                 </div>
-                <div class="row centeredButton">
-                    <a href="(: day ~ /order?year=[: year :]&month=[: month :]&day=[: day :] :)" 
-                       class="btn btn-default">
-                       <!--style="width: 100%; padding: 10%; margin: 0px; font-size:2em" >-->
-                        MODIFICA
-                    </a>
-                </div>
+                (: can_order ~ 
+                            <div class="row centeredButton">
+                                <a href="[: day ~ /order?year={: year :}&month={: month :}&day={: day :} :]" 
+                                   class="btn btn-default">
+                                    MODIFICA
+                                </a>
+                            </div>
+                :)
+                
             </div>
         </div>
 

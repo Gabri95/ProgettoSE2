@@ -19,8 +19,8 @@ var dishesManager = require('./dishesManager.js');
  * @param {Dish[]} a_sides    lista di contorni disponibili alternativi
  * @param {Dish[]} a_desserts lista di dessert disponibili alternativi
  */
-function Menu(date, firsts, seconds, sides, desserts, a_firsts, a_seconds, a_sides, a_desserts){
-	this.date = date;
+function Menu(date, firsts, seconds, sides, desserts, a_firsts, a_seconds, a_sides, a_desserts) {
+    this.date = date;
     this.firsts = firsts;
     this.seconds = seconds;
     this.sides = sides;
@@ -45,101 +45,100 @@ function Menu(date, firsts, seconds, sides, desserts, a_firsts, a_seconds, a_sid
  * @param {function} callback funzione di callback che deve accettare due parametri: err e menu,
  *                            rispettivamente l'eventuale errore riscontrato e il menu disponibile
  */
-function getMenu(date, callback){
+function getMenu(date, callback) {
 
-	if(date != null){
+    if (date != null) {
+        //connect to database
+        pg.connect(
+            //enviromental variable, set by heroku
+            process.env.DATABASE_URL,
+            function (err, client, done) {
+                if (err) {
+                    console.error(err);
+                    callback(err, null);
+                } else {
+                    client.query('SELECT F.dish_id as id, F.dish as dish, F.suggested as suggested, D.name as name, D.description as description \
+                                  FROM (SELECT dish_id, dish, suggested FROM foodapp.menu WHERE date = $1) as F JOIN foodapp.dishes D ON (F.dish_id = D.id) \
+                                  ORDER BY F.dish, F.suggested', [date],
+                        function (err, result) {
+                            //release the client back to the pool
+                            done();
 
-		//connect to database
-		pg.connect(
-			//enviromental variable, set by heroku
-			process.env.DATABASE_URL, 
-			function(err, client, done) {
-		        if(err){
-		            console.error(err);
-		            callback(err, null);
-		        }else{
-		            client.query('SELECT F.dish_id as id, F.dish as dish, F.suggested as suggested, D.name as name, D.description as description \
-		                          FROM (SELECT dish_id, dish, suggested FROM foodapp.menu WHERE date = $1) as F JOIN foodapp.dishes D ON (F.dish_id = D.id) \
-		                          ORDER BY F.dish, F.suggested', 
-		                         [date], 
-		                         function(err, result) {  
-		                            //release the client back to the pool
-		                            done();
-		                            
-		                            var menu = null;
-		                            
-		                            if(err){
-		                                //nel caso si sia verificato un errore lo stampiamo
-		                                console.log(err);
-		                                
-		                            }else if(result.rows.length > 0){
-		                                //nel caso sia stato trovato almeno un piatto, li inseriamo dentro il menu
-		                                var rows = result.rows;
-		                                
-		                                //creo un nuovo oggetto Menu, in cui ogni lista è inizialmente vuota
-		                                menu = new Menu(date, [], [], [], [], [], [], [], []);
+                            var menu = null;
 
-		                                for(var i =0; i<rows.length; i++){
-		                                    //per ogni riga, ovvero per ogni piatto trovato
-		                                    
-		                                    var d = rows[i];
-		                                    
-		                                    //creo l'oggetto Dish corrispondente
-		                                    var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
-		                                    
-		                                    //controllo se il piatto è suggerito o meno e lo inserisco nella lista opportuna
-		                                    var suggested = rows[i].suggested;
-		                                    switch(d.dish){
-		                                        case 'primo':
-		                                            if(suggested){
-		                                                menu.firsts.push(dish);
-		                                            }else{
-		                                                menu.a_firsts.push(dish);
-		                                            }
-		                                            break;
-		                                        case 'secondo':
-		                                            if(suggested){
-		                                                menu.seconds.push(dish);
-		                                            }else{
-		                                                menu.a_seconds.push(dish);
-		                                            }
-		                                            break;
-		                                        case 'contorno':
-		                                            if(suggested){
-		                                                menu.sides.push(dish);
-		                                            }else{
-		                                                menu.a_sides.push(dish);
-		                                            }
-		                                            break;
-		                                        case 'dessert':
-		                                            if(suggested){
-		                                                menu.desserts.push(dish);
-		                                            }else{
-		                                                menu.a_desserts.push(dish);
-		                                            }
-		                                            break;
-		                                        default:
-		                                            break;
+                            if (err) {
+                                //nel caso si sia verificato un errore lo stampiamo
+                                console.log(err);
 
-		                                    }
-		                                }
+                            } else if (result.rows.length > 0) {
+                                //nel caso sia stato trovato almeno un piatto, li inseriamo dentro il menu
+                                var rows = result.rows;
 
-		                            }else{
-		                                //se non ho trovato nessun piatto ritorno un Menu con ogni lista vuota
-		                                menu = new Menu(date, [], [], [], [], [], [], [], []);
-		                            }
-		                            
-		                            //In ogni caso richiamo la funzione di callback con l'eventuale errore riscontrato ed il menu
-		                            callback(err, menu);
-		                        }
-		            );
-		        }
-		            
-	  	     }
-		);
-	}else{
-		callback(null, null);
-	}
+                                //creo un nuovo oggetto Menu, in cui ogni lista è inizialmente vuota
+                                menu = new Menu(date, [], [], [], [], [], [], [], []);
+
+                                for (var i = 0; i < rows.length; i++) {
+                                    //per ogni riga, ovvero per ogni piatto trovato
+
+                                    var d = rows[i];
+
+                                    //creo l'oggetto Dish corrispondente
+                                    var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
+
+                                    //controllo se il piatto è suggerito o meno e lo inserisco nella lista opportuna
+                                    var suggested = rows[i].suggested;
+                                    switch (d.dish) {
+                                        case 'primo':
+                                            if (suggested) {
+                                                menu.firsts.push(dish);
+                                            } else {
+                                                menu.a_firsts.push(dish);
+                                            }
+                                            break;
+                                        case 'secondo':
+                                            if (suggested) {
+                                                menu.seconds.push(dish);
+                                            } else {
+                                                menu.a_seconds.push(dish);
+                                            }
+                                            break;
+                                        case 'contorno':
+                                            if (suggested) {
+                                                menu.sides.push(dish);
+                                            } else {
+                                                menu.a_sides.push(dish);
+                                            }
+                                            break;
+                                        case 'dessert':
+                                            if (suggested) {
+                                                menu.desserts.push(dish);
+                                            } else {
+                                                menu.a_desserts.push(dish);
+                                            }
+                                            break;
+                                        default:
+                                            break;
+
+                                    }
+                                }
+
+                            } else {
+                                //se non ho trovato nessun piatto ritorno un Menu con ogni lista vuota
+                                menu = new Menu(date, [], [], [], [], [], [], [], []);
+                            }
+
+                            //In ogni caso richiamo la funzione di callback con l'eventuale errore riscontrato ed il menu
+                            callback(err, menu);
+                        }
+                    );
+                }
+
+            }
+        );
+    } else {
+        callback(null, null);
+    }
+
 }
 
 
@@ -154,56 +153,56 @@ function getMenu(date, callback){
  * @param {function} callback funzione di callback che deve accettare due parametri: err e menu,
  *                            rispettivamente l'eventuale errore riscontrato e il menu disponibile
  */
-function getSuggestedMenu(date, callback){
-	if(date != null){
-		//connect to database
-		pg.connect(
-			//enviromental variable, set by heroku
-			process.env.DATABASE_URL, 
-			function(err, client, done) {
-		        if(err){
-		            //se si è verificato un errore lo stampo e richiamo la funzione di callback con l'errore e una lista vuota.
-		            console.log(err);
-		            callback(err, []);
-		        }else{
-		            client.query('SELECT F.dish_id as id, F.dish as dish, D.name as name, D.description as description '+
-		                         'FROM (SELECT dish_id, dish FROM foodapp.menu WHERE date = $1 AND suggested = true) as F '+
-		                                'JOIN foodapp.dishes D ON (F.dish_id = D.id) '+
-		                         'ORDER BY dish', 
-		                         [date], 
-		                         function(err, result) {  
-		                            //release the client back to the pool
-		                            done();
-		                            
-		                            var menu = [];
-		                            
-		                            if(err){ 
-		                                //nel caso si sia verificato un errore lo stampo
-		                                console.log(err);
-		                            }else if(result.rows.length > 0){
-		                                //se è stato trovato almeno un risultato, inserisco gli oggetti Dish con le informazioni necessarie nella lista da restituire
-		                                var rows = result.rows;
+function getSuggestedMenu(date, callback) {
+    if (date != null) {
+        //connect to database
+        pg.connect(
+            //enviromental variable, set by heroku
+            process.env.DATABASE_URL,
+            function (err, client, done) {
+                if (err) {
+                    //se si è verificato un errore lo stampo e richiamo la funzione di callback con l'errore e una lista vuota.
+                    console.log(err);
+                    callback(err, []);
+                } else {
+                    client.query('SELECT F.dish_id as id, F.dish as dish, D.name as name, D.description as description ' +
+                        'FROM (SELECT dish_id, dish FROM foodapp.menu WHERE date = $1 AND suggested = true) as F ' +
+                        'JOIN foodapp.dishes D ON (F.dish_id = D.id) ' +
+                        'ORDER BY dish', [date],
+                        function (err, result) {
+                            //release the client back to the pool
+                            done();
 
-		                                for(var i =0; i<rows.length; i++){
-		                                    var d = rows[i];
-		                                    
-		                                    var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
-		                                    menu.push(dish);
-		                                }
+                            var menu = [];
 
-		                            }
-		                            
-		                            //In ogni caso richiamo la funzione di callbakc passandogli l'eventuale errore e la lista calcolata
-		                            callback(err, menu);
-		                        }
-		            );
-		        }
-		            
-	  	     }
-		);
-	}else{
-		callback(null, null);
-	}
+                            if (err) {
+                                //nel caso si sia verificato un errore lo stampo
+                                console.log(err);
+                            } else if (result.rows.length > 0) {
+                                //se è stato trovato almeno un risultato, inserisco gli oggetti Dish con le informazioni necessarie nella lista da restituire
+                                var rows = result.rows;
+
+                                for (var i = 0; i < rows.length; i++) {
+                                    var d = rows[i];
+
+                                    var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
+                                    menu.push(dish);
+                                }
+
+                            }
+
+                            //In ogni caso richiamo la funzione di callbakc passandogli l'eventuale errore e la lista calcolata
+                            callback(err, menu);
+                        }
+                    );
+                }
+
+            }
+        );
+    } else {
+        callback(null, null);
+    }
+
 }
 
 
@@ -225,75 +224,77 @@ function getSuggestedMenu(date, callback){
  * @param {function} callback funzione di callback che deve accettare due parametri: err e menu,
  *                            rispettivamente l'eventuale errore riscontrato e l'oggetto contenente le due liste di piatti
  */
-function getMenuDish(date, dish, callback){
+function getMenuDish(date, dish, callback) {
 
-	if(date != null && dish != null){
+    if (date != null && dish != null) {
 
-		//connect to database
-		pg.connect(
-			//enviromental variable, set by heroku when first databse is created
-			process.env.DATABASE_URL, 
-			function(err, client, done) {
-		        if(err){
-		            //se si è verificato un errore lo stampo e richiamo la funzione di callback passandogli l'errore è le liste di piatti vuote
-		            console.error(err);
-		            callback(err, {suggested: [], alternatives: []});
-		        }else{
-		            client.query('SELECT P.dish_id as id, P.suggested as suggested, D.name as name, D.description as description \
-		                          FROM (SELECT dish_id, suggested FROM foodapp.menu WHERE date = $1 AND dish = $2) as P JOIN foodapp.dishes D ON (P.dish_id = D.id)', 
-		                         [date, dish], 
-		                         function(err, result) {  
-		                            //release the client back to the pool
-		                            done();
-		                            
-		                            var menu = {
-		                                suggested: [],
-		                                alternatives: []
-		                            };  
-		                            
-		                            if(err){ 
-		                                //se si è verificato un errore lo stampo
-		                                console.log(err);
-		                            }else if(result.rows.length > 0){
-		                                //se abbiamo trovato almeno un risultato, inserisco i piatti corrispondenti nel menu da restituire
-		                                var rows = result.rows;
-		                                
-                                        
-                                        
-		                                for(var i =0; i<rows.length; i++){
-		                                    var d = rows[i];
-		                                    
-		                                    //per ogni piatto trovato creo l'oggetto corrispondente e lo inserisco nella lista opportuna
-		                                    var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
-		                                    
-		                                    var suggested = rows[i].suggested;
-		                                    if(suggested){
-		                                        menu.suggested.push({
-		                                            id: d.id,
-		                                            name: d.name,
-		                                            description: d.description
-		                                        });
-		                                    }else{
-		                                        menu.alternatives.push({
-		                                            id: d.id,
-		                                            name: d.name,
-		                                            description: d.description
-		                                        });
-		                                    }
-		                                }
+        //connect to database
+        pg.connect(
+            //enviromental variable, set by heroku when first databse is created
+            process.env.DATABASE_URL,
+            function (err, client, done) {
+                if (err) {
+                    //se si è verificato un errore lo stampo e richiamo la funzione di callback passandogli l'errore è le liste di piatti vuote
+                    console.error(err);
+                    callback(err, {
+                        suggested: [],
+                        alternatives: []
+                    });
+                } else {
+                    client.query('SELECT P.dish_id as id, P.suggested as suggested, D.name as name, D.description as description \
+                              FROM (SELECT dish_id, suggested FROM foodapp.menu WHERE date = $1 AND dish = $2) as P JOIN foodapp.dishes D ON (P.dish_id = D.id)', [date, dish],
+                        function (err, result) {
+                            //release the client back to the pool
+                            done();
 
-		                            }
-		                            //In ogni caso richiamo la funzione di callback con l'eventuale errore verificatosi
-		                            //e le liste di piatti calcolate (eventualmente vuote)
-		                            callback(err, menu);
-		                        }
-		            );
-		        }
-	  	     }
-		);
-	} else {
-		callback(null, null);
-	}
+                            var menu = {
+                                suggested: [],
+                                alternatives: []
+                            };
+
+                            if (err) {
+                                //se si è verificato un errore lo stampo
+                                console.log(err);
+                            } else if (result.rows.length > 0) {
+                                //se abbiamo trovato almeno un risultato, inserisco i piatti corrispondenti nel menu da restituire
+                                var rows = result.rows;
+
+
+                                for (var i = 0; i < rows.length; i++) {
+                                    var d = rows[i];
+
+                                    //per ogni piatto trovato creo l'oggetto corrispondente e lo inserisco nella lista opportuna
+                                    var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
+
+                                    var suggested = rows[i].suggested;
+                                    if (suggested) {
+                                        menu.suggested.push({
+                                            id: d.id,
+                                            name: d.name,
+                                            description: d.description
+                                        });
+                                    } else {
+                                        menu.alternatives.push({
+                                            id: d.id,
+                                            name: d.name,
+                                            description: d.description
+                                        });
+                                    }
+                                }
+
+                            }
+                            //In ogni caso richiamo la funzione di callback con l'eventuale errore verificatosi
+                            //e le liste di piatti calcolate (eventualmente vuote)
+                            callback(err, menu);
+                        }
+                    );
+                }
+            }
+        );
+    } else {
+        callback(null, null);
+    }
+
 }
 
 

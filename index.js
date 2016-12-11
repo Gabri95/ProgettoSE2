@@ -117,7 +117,7 @@ app.use('/logout', function (req, res) {
 /**
  * Pagina di partenza. Se non si è loggati si viene reindirizzati qua, dove si può scegliere se fare il login o la registrazione.
  */
-app.use('/start', function (req, res) {
+app.use('/start', sessionManager.isNotLogged, function (req, res) {
     res.sendFile(path.join(__dirname + "/web_pages/start.html"));
 });
 
@@ -128,7 +128,7 @@ app.use('/start', function (req, res) {
  * In caso contrario verrà reindirizzato ancora alla pagina di partenza.
  * Se si è verificato un errore, verrà reindirizzato alla pagina di errore.
  */
-app.post('/login', function (req, res) {
+app.post('/login', sessionManager.isNotLogged, function (req, res) {
 
     var post = req.body;
 

@@ -9,7 +9,6 @@
 
 .container-fluid {
     background-color: #FFED57;
-    text-align: left;
     padding: 7%;
 }
 
@@ -26,13 +25,24 @@
     margin: 0%;
 }
 
+.nav_icon {
+    padding: 5px;
+}
+
+.nav_icon a{
+    padding-left:0;
+    padding-right:0;
+    float: none;
+}
+
 .centeredTitle {
-    
     padding: 5%;
     margin-top: 13%;
     margin-bottom: 13%;
-    
-    
+}
+
+.subheading{
+    padding: 10% 0%;
 }
 
 .glyphicon {
@@ -149,6 +159,7 @@
 
 .panel-body {
     background-color: #FFF7A2;
+    text-align: left;
 }
 
 .dish.chosen {

@@ -21,7 +21,7 @@ function User(username, password, name, surname, address, phone) {
     this.surname = surname;
     this.address = address;
     this.phone = phone;
-};
+}
 
 /**
  * Metodo necessario per fare il login.
@@ -152,7 +152,7 @@ function isNotLogged(req, res, next) {
 
     if(req.session && req.session.user != null){
         //se esiste l'attributo "user" nella sessione attuale, allora l'utente è loggato e quindi viene reindirizzato alla sua homepage
-        res.redirect('/');
+        res.redirect('/home');
     }else{
         //in caso contrario può procedere
         next();

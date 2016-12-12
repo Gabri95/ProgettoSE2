@@ -2,14 +2,13 @@
 var pg = require('pg');
 
 //Impostata la variabile contente l'indirizzo online del database. Sono aggiunti i parametri necessari per poter permettere la connessione ad esso.
-process.env.DATABASE_URL = process.env.DATABASE_URL + '?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory'
+process.env.DATABASE_URL = process.env.DATABASE_URL + '?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory';
 console.log(process.env.DATABASE_URL);
 
 
 //importazione dei moduli esterni necessari
 var sessionManager = require("./sessionManager.js");
 var menuManager = require("./menuManager.js");
-var dishesManager = require("./dishesManager.js");
 var ordersManager = require("./ordersManager.js");
 var utility = require('./utility.js');
 
@@ -81,14 +80,79 @@ function getPlacePhrase(place) {
     }
 }
 
-
-function createHeaders() {
+/**
+ * Ritorna gli header utilizzati in tutte le risposte che contengono un file html
+ * @returns {object} l'header pronto da includere nella risposta
+ */
+function getHeaders() {
 
     var headers = {};
     //answer
+    headers["Access-Control-Allow-Origin"] = "*";
+    headers["Access-Control-Allow-Methods"] = "POST, GET, PUT, DELETE, OPTIONS";
+    headers["Access-Control-Allow-Credentials"] = false;
+    headers["Access-Control-Max-Age"] = '86400'; // 24 hours
+    headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
     headers["Content-Type"] = "text/html"; //format response
 
     return headers;
+}
+
+/**
+ * Metodo che inserisce nella risposta la rappresentazione JSON dell'oggetto obj
+ * @param {response} response la response di express
+ * @param {Object}   obj      un qualunque oggetto da trasformare in JSON
+ */
+function returnJSON(response, obj) {
+    var headers = {};
+    //answer
+    headers["Access-Control-Allow-Origin"] = "*";
+    headers["Access-Control-Allow-Credentials"] = false;
+    headers["Access-Control-Max-Age"] = '86400'; // 24 hours
+    headers["Access-Control-Allow-Headers"] = "X-Requested-With, X-HTTP-Method-Override, Content-Type, Accept";
+    headers["Content-Type"] = "application/json"; //format response
+
+    //answer a JSON file
+    var json = JSON.stringify(obj);
+    
+    response.writeHead(200, headers);
+    response.end(json);
+}
+
+/**
+ * Visualizza una pagina di errore in una risposta HTTP con codice 500
+ * @param {response} response la response HTTP di express
+ */
+function errorPageInternalError(response){
+    bind.toFile(
+        'web_pages/message.tpl', {
+            message: "C'è stato un errore nel server"
+        },
+        function (d) {
+            
+            response.writeHead(500, getHeaders());
+            response.end(d);
+        }
+    );
+}
+
+/**
+ * Visualizza una pagina di errore in una risposta HTTP con codice 200
+ * @param {response} response la response HTTP di express
+ */
+function errorPageBadRequest(response){
+    bind.toFile(
+        'web_pages/message.tpl', {
+            message: "Pagina non disponibile"
+        },
+        function (d) {
+            var headers = {};
+            //answer
+            headers["Content-Type"] = "text/html";
+            response.writeHead(400, getHeaders());
+            response.end(d);
+        }
+    );
 }
 
 
@@ -132,28 +196,30 @@ app.post('/login', sessionManager.isNotLogged, function (req, res) {
 
     var post = req.body;
 
-    //cerchiamo di autenticare l'utente
-    sessionManager.authenticate(post.username, post.password, function (err, user) {
-        if (err) {
-            response.redirect('/error');
-        } else if (user !== null) {
-            req.session.user = user;
+    if (post != null) {
+        //cerchiamo di autenticare l'utente
+        sessionManager.authenticate(post.username, post.password, function (err, user) {
+            if (err) {
+                errorPageInternalError(response);
+            } else if (user !== null) {
+                req.session.user = user;
 
-            res.redirect('/');
-        } else {
-            res.redirect('/start');
-        }
-    });
+                res.redirect('/home');
+            } else {
+                res.redirect('/start');
+            }
+        });
+    }else{
+        errorPageBadRequest(response);
+    }
+
+
 
 });
 
-/**
- * Pagina di errore.
- * Visualizza un messaggio di errore in modo più user friendly.
- */
-app.use('/error', sessionManager.isLogged, function (request, response) {
-    response.sendFile(path.join(__dirname + "/web_pages/error.html"));
-});
+
+
+
 
 /**
  * Creazione di un ordine.
@@ -183,15 +249,15 @@ app.get('/makeorder', sessionManager.isLogged, function (request, response) {
 
     //controllo se la data creata è valida (per sempio se il mese passato come parametro conteneva una stringa, il risultato non sarebbe stato valido)
     if (!utility.isValidDate(date)) {
-        //in caso negativo rimando alla pagina di errore
-        response.redirect('/error');
+        //in caso negativo mostro la pagina di errore
+        errorPageBadRequest(response);
     } else {
 
         //cerco di inserire l'ordine nel database
         ordersManager.makeOrder(request.session.user.username, date, first, second, side, dessert, place, function (err) {
 
             if (err) {
-                response.redirect('/error');
+                errorPageInternalError(response);
             } else {
                 response.redirect('/day?year=' + year + '&month=' + month + '&day=' + day);
             }
@@ -206,18 +272,19 @@ app.get('/makeorder', sessionManager.isLogged, function (request, response) {
  */
 app.use('/week', sessionManager.isLogged, function (request, response) {
 
-    var days = ordersManager.getNearDays(request.session.user.username, new Date(), 0, 6, function (err, days) {
+    ordersManager.getNearDays(request.session.user.username, new Date(), 0, 6, function (err, days) {
 
         if (err) {
-            response.redirect('/error');
+            errorPageInternalError(response);
         } else {
             //Compilo e inserisco nella risposta il template
             bind.toFile(
-                'web_pages/utente/settimana.tpl',
-                {days: days}, 
-                function(d) {
+                'web_pages/utente/settimana.tpl', {
+                    days: days
+                },
+                function (d) {
                     //write response
-                    response.writeHead(200, createHeaders());
+                    response.writeHead(200, getHeaders());
                     response.end(d);
                 }
             );
@@ -226,17 +293,6 @@ app.use('/week', sessionManager.isLogged, function (request, response) {
 
 
 });
-
-/**
- * Metodo che inserisce nella risposta la rappresentazione JSON dell'oggetto obj
- * @param {response} response la response di express
- * @param {Object}   obj      un qualunque oggetto da trasformare in JSON
- */
-function returnJSON(response, obj) {
-    //answer a JSON file
-    var json = JSON.stringify(obj);
-    response.end(json);
-}
 
 
 
@@ -255,21 +311,18 @@ app.get('/getdish', function (request, response) {
     var dish = getVar.dish;
 
 
-    var day = new Date(year, month - 1, day, 0, 0, 0, 0);
+    var date = new Date(parseInt(year), month - 1, day, 0, 0, 0, 0);
 
-    if (!utility.isValidDate(day) || dish == 'undefined' ||
+    if (!utility.isValidDate(date) || dish == 'undefined' ||
         (dish != 'primo' && dish != 'secondo' && dish != 'contorno' && dish != 'dessert')) {
-        console.log(day);
-        console.log(dish);
         //nel caso alcuni dei parametri non siano validi ritorniamo un oggetto con le liste vuote.
         returnJSON(response, {
             suggested: [],
             alternatives: []
         });
     } else {
-        console.log(day);
-        menuManager.getMenuDish(day, dish, function (err, menu) {
-            console.log(menu);
+        menuManager.getMenuDish(date, dish, function (err, menu) {
+
             returnJSON(response, menu);
         });
     }
@@ -293,31 +346,31 @@ app.get('/day', sessionManager.isLogged, function (request, response) {
 
 
 
-    var day = new Date(parseInt(year), month - 1, day, 0, 0, 0, 0);
+    var date = new Date(parseInt(year), month - 1, day, 0, 0, 0, 0);
     //controllo se la data creata è valida (per sempio se il mese passato come parametro conteneva una stringa, il risultato non sarebbe stato valido)
-    if (!utility.isValidDate(day)) {
-        response.redirect('/error');
+    if (!utility.isValidDate(date)) {
+        errorPageBadRequest(response);
     } else {
-        ordersManager.getNearDays(request.session.user.username, day, 2, 2, function (err, days) {
+        ordersManager.getNearDays(request.session.user.username, date, 2, 2, function (err, days) {
             if (err) {
-                response.redirect('/error');
+                errorPageInternalError(response);
             } else {
                 for (var i = 0; i < days.length; i++) {
                     days[i].name = days[i].name.slice(0, 3);
                 }
 
-                ordersManager.getOrder(request.session.user.username, day, function (err, order) {
+                ordersManager.getOrder(request.session.user.username, date, function (err, order) {
                     if (err) {
-                        response.redirect('/error');
+                        errorPageInternalError(response);
                     } else {
 
                         if (order == null) {
                             //Se non è stato effettuato alcun ordine per questo giorno mostro i piatti consigliati
 
-                            menuManager.getSuggestedMenu(day, function (err, menu) {
+                            menuManager.getSuggestedMenu(date, function (err, menu) {
 
                                 if (err || menu == null) {
-                                    response.redirect('/error');
+                                    errorPageInternalError(response);
                                 } else {
                                     //Compilo e inserisco nella risposta il template
                                     bind.toFile(
@@ -332,7 +385,7 @@ app.get('/day', sessionManager.isLogged, function (request, response) {
                                         },
                                         function (d) {
                                             //write response
-                                            response.writeHead(200, createHeaders());
+                                            response.writeHead(200, getHeaders());
                                             response.end(d);
                                         }
                                     );
@@ -343,8 +396,7 @@ app.get('/day', sessionManager.isLogged, function (request, response) {
 
                             //Compilo e inserisco nella risposta il template
                             bind.toFile(
-                                'web_pages/utente/menu_ordinato.tpl',
-								{
+                                'web_pages/utente/menu_ordinato.tpl', {
                                     y_2: days[0],
                                     y_1: days[1],
                                     day: days[2],
@@ -352,11 +404,11 @@ app.get('/day', sessionManager.isLogged, function (request, response) {
                                     t_2: days[4],
                                     place_phrase: getPlacePhrase(order.place),
                                     order: order,
-                                    can_order: (utility.followingDay(new Date(), ordersManager.DAY_LIMIT) <= day)
+                                    can_order: (utility.followingDay(new Date(), ordersManager.DAY_LIMIT) <= date)
                                 },
                                 function (d) {
                                     //write response
-                                    response.writeHead(200, createHeaders());
+                                    response.writeHead(200, getHeaders());
                                     response.end(d);
                                 }
                             );
@@ -392,16 +444,16 @@ app.get('/order', sessionManager.isLogged, function (request, response) {
 
     //controllo se la data creata è valida (per sempio se il mese passato come parametro conteneva una stringa, il risultato non sarebbe stato valido)
     if (!utility.isValidDate(date)) {
-        response.redirect('/error');
+        errorPageBadRequest(response);
     } else if (utility.followingDay(new Date(), ordersManager.DAY_LIMIT) > date) {
         //in tal caso non è più possibile modificare/inserire un'ordinazione
         bind.toFile(
             'web_pages/message.tpl', {
-                order: "Non puoi più ordinare per questo giorno"
+                message: "Non puoi più ordinare per questo giorno"
             },
             function (d) {
                 //write response
-                response.writeHead(200, createHeaders());
+                response.writeHead(200, getHeaders());
                 response.end(d);
             }
         );
@@ -412,7 +464,7 @@ app.get('/order', sessionManager.isLogged, function (request, response) {
         //In caso contrario, l'oggetto order sarà null, e nessuna scelta sarà evidenziata
         ordersManager.getOrder(request.session.user.username, date, function (err, order) {
             if (err) {
-                response.redirect('/error');
+                errorPageInternalError(response);
             } else {
                 bind.toFile(
                     'web_pages/utente/menu_ordinare.tpl', {
@@ -426,7 +478,7 @@ app.get('/order', sessionManager.isLogged, function (request, response) {
                     },
                     function (d) {
                         //write response
-                        response.writeHead(200, createHeaders());
+                        response.writeHead(200, getHeaders());
                         response.end(d);
                     }
                 );
@@ -440,24 +492,27 @@ app.get('/order', sessionManager.isLogged, function (request, response) {
 /**
  * Home page per l'utente normale
  */
-app.use('/', sessionManager.isLogged, function (request, response) {
+app.use('/home', sessionManager.isLogged, function (request, response) {
 
     //Compilo e inserisco nella risposta il template
     bind.toFile(
-        'web_pages/utente/home.tpl',
-		{},
+        'web_pages/utente/home.tpl', {},
         function (d) {
             //write response
-            response.writeHead(200, createHeaders());
+            response.writeHead(200, getHeaders());
             response.end(d);
         }
     );
-
-
-
-
 });
 
+
+app.use('/', function (request, response) {
+    if (request.session && request.session.user != null) {
+        response.redirect("/home");
+    } else {
+        response.redirect("/start");
+    }
+});
 
 
 

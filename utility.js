@@ -65,7 +65,7 @@ function previousDay(day, n) {
  * @returns {string} il numero in formato NN
  */
 function zeroPad(d) {
-    return ("0" + d).slice(-2)
+    return ("0" + d).slice(-2);
 }
 
 /**
@@ -74,7 +74,7 @@ function zeroPad(d) {
  * @returns {string} data convertita in formato "YYYY-MM-DD"
  */
 function pgFormatDate(date) {
-    var parsed = new Date(date)
+    var parsed = new Date(date);
     return [parsed.getFullYear(), zeroPad(parsed.getMonth() + 1), zeroPad(parsed.getDate())].join("-");
 }
 

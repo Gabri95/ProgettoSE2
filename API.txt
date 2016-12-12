@@ -1,0 +1,319 @@
+swagger: '2.0'
+
+info:
+  version: "1.0.0"
+  title: FoodApp
+  description: definizione delle API
+
+host: stark-falls-43532.herokuapp.com
+
+schemes:
+  - https
+
+basePath: /
+produces:
+- text/html
+
+# the APIs
+paths:
+  /start:
+    get:
+      summary: mostra la pagina iniziale
+      description: mostra una pagina con due opzioni, ovvero il pulsante per accedere e quello per registrarsi
+      responses:
+        200:
+          description: pagina iniziale
+    post:
+      summary: mostra la pagina iniziale
+      description: mostra una pagina con due opzioni, ovvero il pulsante per accedere e quello per registrarsi
+      responses:
+        200:
+          description: pagina iniziale
+  /home:
+    get:
+      summary: mostra la home page
+      description: mostra la home page di un utente loggato, dalla quale è possibile accedere alla pagina per iniziare le ordinazioni
+      responses:
+        200:
+          description: Home Page dell'utente
+        302:
+          description: Se l'utente non è loggato viene reindirizzato alla pagina iniziale
+          headers:
+            Location:
+              type: "string"
+    post:
+      summary: mostra la home page
+      description: mostra la home page di un utente loggato, dalla quale è possibile accedere alla pagina per iniziare le ordinazioni
+      responses:
+        200:
+          description: Home Page dell'utente
+        302:
+          description: Se l'utente non è loggato viene reindirizzato alla pagina iniziale
+          headers:
+            Location:
+              type: "string"
+  /week:
+    get:
+      summary: mostra l'elenco dei prossimi sette giorni
+      description: mostra una pagina con l'elenco dei prossimi giorni con delle informazioni grafiche sulle ordinazioni per tali giorni
+      responses:
+        200:
+          description: pagina con elenco dei giorni
+        302:
+          description: Se l'utente non è loggato viene reindirizzato alla pagina iniziale
+          headers:
+            Location:
+              type: "string"
+        400:
+          description: mostra una pagina di errore nel caso ci siano stati problemi
+    post:
+      summary: mostra l'elenco dei prossimi sette giorni
+      description: mostra una pagina con l'elenco dei prossimi giorni con delle informazioni grafiche sulle ordinazioni per tali giorni
+      responses:
+        200:
+          description: pagina con elenco dei giorni
+        302:
+          description: Se l'utente non è loggato viene reindirizzato alla pagina iniziale
+          headers:
+            Location:
+              type: "string"
+        400:
+          description: mostra una pagina di errore nel caso ci siano stati problemi
+  /day:
+    get:
+      description: |
+        Visualizza il menu consigliato dallo Chef o la propria ordinazione (nel caso sia già stata fatta) per un giorno
+      responses:
+        200:
+          description: Mostra una pagina con la lista dei piatti
+        302:
+          description: Se l'utente non è loggato viene reindirizzato alla pagina iniziale
+          headers:
+            Location:
+              type: "string"
+        400:
+          description: mostra una pagina di errore nel caso ci siano stati problemi
+        500:
+          description: mostra una pagina di errore nel caso la richiesta non sia valida
+      parameters:
+      - name: year
+        in: query
+        type: integer
+        required: true
+        description: intero che indica l'anno
+      - name: month
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il mese
+      - name: day
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il giorno
+  /order:
+    get:
+      description: |
+        Visualizza la pagina che permette di compilare o modificare la propria ordinazione per un giorno
+      responses:
+        200:
+          description: Mostra una pagina per ordinare o un messaggio se l'ultimo giorno per ordinare è passato
+        302:
+          description: Se l'utente non è loggato viene reindirizzato alla pagina iniziale
+          headers:
+            Location:
+              type: "string"
+        400:
+          description: mostra una pagina di errore nel caso ci siano stati problemi
+        500:
+          description: mostra una pagina di errore nel caso la richiesta non sia valida
+      parameters:
+      - name: year
+        in: query
+        type: integer
+        required: true
+        description: intero che indica l'anno
+      - name: month
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il mese
+      - name: day
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il giorno
+  /logout:
+    get:
+      description: |
+        Elimina la sessione corrente, effettuando quindi il logout.
+        Dopodiche reindirizza alla pagina di partenza /start
+      responses:
+        302:
+          description: "Reindirizza a /start"
+          headers:
+            Location:
+              type: "string"
+    post:
+      description: |
+          Elimina la sessione corrente, effettuando quindi il logout.
+          Dopodiche reindirizza alla pagina di partenza /start
+      responses:
+        302:
+          description: "Redirect to /start"
+          headers:
+            Location:
+              type: "string"
+  /login:
+    post:
+      description: |
+        Effettua il login dell'utente utilizzando i parametri username e password.
+        Se l'autenticazione va a buon fine, inserisce l'oggetto "user" dentro la sessione.
+      responses:
+        302:
+          description: "Reindirizza l'utente in base all'esito dell'autenticazione"
+          headers:
+            Location:
+              type: "string"
+        400:
+          description: mostra una pagina di errore nel caso ci siano stati problemi
+        500:
+          description: mostra una pagina di errore nel caso la richiesta non sia valida
+      parameters:
+      - name: username
+        type: string
+        in: formData
+        description: username che identifica l'utente
+        required: true
+      - name: password
+        type: string
+        in: formData
+        description: password inserita dall'utente
+        required: true
+  /makeorder:
+    get:
+      description: |
+        Effettua l'ordine descritto dai parametri.
+      responses:
+        302:
+          description: Reindirizza l'utente alla pagina iniziale se non è loggato oppure in base all'esito dell'inserimento.
+          headers:
+            Location:
+              type: "string"
+        400:
+          description: mostra una pagina di errore nel caso ci siano stati problemi
+        500:
+          description: mostra una pagina di errore nel caso la richiesta non sia valida
+      parameters:
+      - name: year
+        in: query
+        type: integer
+        required: true
+        description: intero che indica l'anno
+      - name: month
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il mese
+      - name: day
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il giorno
+      - name: first
+        in: query
+        type: integer
+        required: true
+        description: intero che identifica il piatto ordinato come primo
+      - name: second
+        in: query
+        type: integer
+        required: true
+        description: intero che identifica il piatto ordinato come secondo
+      - name: side
+        in: query
+        type: integer
+        required: true
+        description: intero che identifica il piatto ordinato come contorno
+      - name: dessert
+        in: query
+        type: integer
+        required: true
+        description: intero che identifica il piatto ordinato come dolce
+      - name: place
+        in: query
+        type: string
+        required: true
+        description: stringa che indica il luogo in cui l'utente desidera mangiare
+  /getdishes:
+    get:
+      description: |
+        Ritorna la lista di piati consigliati e alternativi nel giorno specificato per la portata specificata
+      produces:
+      - application/json
+      responses:
+        200:
+          description: liste dei piatti consigliati e alternativi
+          schema: 
+            $ref: "#/definitions/Dishes"
+          
+      parameters:
+      - name: year
+        in: query
+        type: integer
+        required: true
+        description: intero che indica l'anno
+      - name: month
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il mese
+      - name: day
+        in: query
+        type: integer
+        required: true
+        description: intero che indica il giorno
+      - name: dish
+        in: query
+        type: string
+        required: true
+        description: stringa che indica la portata
+  /:
+    get:
+      description: |
+        Reindirizza alla home page se l'utente è loggato, altrimenti rimanda alla pagina iniziale
+      responses:
+        302:
+          description: reindirizza l'utente
+    post:
+      description: |
+        Reindirizza alla home page se l'utente è loggato, altrimenti rimanda alla pagina iniziale
+      responses:
+        302:
+          description: reindirizza l'utente
+
+definitions:
+  Dish:
+    description: un piatto
+    properties:
+      id:
+        type: integer
+        description: l'id del piatto
+      name:
+        type: string
+        description: il nome del piatto
+      description:
+        type: string
+        description: una descrizione del piatto
+  Dishes:
+    description: Liste dei piatti consigliati e alternativi
+    properties:
+      suggested:
+        type: array
+        items:
+          $ref: '#/definitions/Dish'
+      alternatives:
+        type: array
+        items:
+          $ref: '#/definitions/Dish'
+          

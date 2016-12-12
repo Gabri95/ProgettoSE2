@@ -37,7 +37,7 @@
                                 <span><h3><i>[: name :]</i></h3></span>
                             </div>
                             <div class="col-xs-6">
-                                <img src="/photos/[: id :].jpg" class="img-rounded" alt="[: name :]" width="150" height="90">
+                                <img src="/photos/[: id :].jpg" class="img-rounded" alt="[: name :]" title="[: name :]" width="150" height="90">
                             </div>
                         </div>
 

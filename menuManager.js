@@ -29,7 +29,7 @@ function Menu(date, firsts, seconds, sides, desserts, a_firsts, a_seconds, a_sid
     this.a_seconds = a_seconds;
     this.a_sides = a_sides;
     this.a_desserts = a_desserts;
-};
+}
 
 
 /**
@@ -264,8 +264,6 @@ function getMenuDish(date, dish, callback) {
                                     var d = rows[i];
 
                                     //per ogni piatto trovato creo l'oggetto corrispondente e lo inserisco nella lista opportuna
-                                    var dish = new dishesManager.Dish(d.id, d.name, d.description, null, null);
-
                                     var suggested = rows[i].suggested;
                                     if (suggested) {
                                         menu.suggested.push({

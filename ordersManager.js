@@ -33,7 +33,7 @@ function Order(user, date, first, second, side, dessert, place) {
     this.side = side;
     this.dessert = dessert;
     this.place = place;
-};
+}
 
 
 

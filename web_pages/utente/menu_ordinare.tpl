@@ -33,25 +33,25 @@
                 <div class="panel-body choice_list">
                     <div class="col-xs-3 ordine" id="primo_choice">
                         <div class="tumbnail">
-                            <img src="" class="img-rounded" alt="">
+                            <img src="" class="img-rounded" alt="" title="">
                             <span class="badge">Primo</span>
                         </div>
                     </div>
                     <div class="col-xs-3 ordine" id="secondo_choice">
                         <div class="tumbnail">
-                            <img src="" class="img-rounded" alt="">
+                            <img src="" class="img-rounded" alt="" title="">
                             <span class="badge">Secondo</span>
                         </div>
                     </div>
                     <div class="col-xs-3 ordine" id="contorno_choice">
                         <div class="tumbnail">
-                            <img src="" class="img-rounded" alt="">
+                            <img src="" class="img-rounded" alt="" title="">
                             <span class="badge">Contorno</span>
                         </div>
                     </div>
                     <div class="col-xs-3 ordine" id="dessert_choice">
                         <div class="tumbnail">
-                            <img src="" class="img-rounded" alt="">
+                            <img src="" class="img-rounded" alt="" title="">
                             <span class="badge">Dessert</span>
                         </div>
                     </div>
@@ -91,7 +91,7 @@
             </div>
             
             
-            <div class="container-fluid" id ="resumeView" style="display: none">
+            <div class="container-fluid" id ="resumeView" style="display: none;">
                 <div class="row">
                     <div class="panel">
                         <div class="panel-heading">
@@ -103,10 +103,10 @@
                         
                     </div>
                 </div>
-                <div class="row" style="text-align: center;">
+                <div class="row">
                     <h2>Dove preferisci mangiare?</h2>
                 </div>
-                <div class="row" style="text-align: center;">
+                <div class="row">
                     <div class="col-xs-6">
                         <button type="button" class="btn btn-default placeBtn" id="domicilio">Domicilio</button>
                     </div>

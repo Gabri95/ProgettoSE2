@@ -108,13 +108,16 @@ function setDish(dish, choice) {
     var div = $("#" + dish + "_choice");
     var img = div.children("div").children("img");
     img.attr("src", "/photos/" + choice.id + ".jpg");
+    
+    
 
     var name = choice.name;
     if (name == undefined) {
         name = "";
     }
     img.attr("alt", name);
-
+    img.attr("title", name);
+    
     $("#" + dish).val(choice.id);
 
 }
@@ -171,6 +174,7 @@ function generateDishRow(dish, selectable) {
             .addClass("img-rounded")
             .attr("src", "/photos/" + dish.id + ".jpg")
             .attr("alt", dish.name)
+            .attr("title", dish.name)
             .attr("width", 150)
             .attr("height", 90)));
     return row;
@@ -190,8 +194,7 @@ function getDishes() {
 
     $.get("/getdish?day=" + date.day + "&month=" + date.month + "&year=" + date.year + "&dish=" + dishes[ordering], function (data, status) {
 
-        data = JSON.parse(data);
-
+        
         //prendo il nome della nuova portata
         var dish = dishes[ordering];
 

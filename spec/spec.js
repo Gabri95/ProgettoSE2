@@ -54,7 +54,7 @@ describe("Test authentication: ", function() {
                 client.post(base_url + "/login", data, 
                     function(error, response, body) {
                         expect(response.statusCode).toBe(302);
-                        expect(response.headers.location).toBe("/");
+                        expect(response.headers.location).toBe("/home");
                         done();
                     });
             }); 

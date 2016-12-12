@@ -140,4 +140,98 @@ INSERT INTO foodapp.menu VALUES ('2016-12-14', 'dessert', true, 9);
 INSERT INTO foodapp.menu VALUES ('2016-12-14', 'dessert', false, 8);
 
 
+INSERT INTO foodapp.menu VALUES ('2016-12-15', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-15', 'primo', true, 0);
+INSERT INTO foodapp.menu VALUES ('2016-12-15', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-15', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-15', 'contorno', false, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-15', 'dessert', true, 9);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-16', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-16', 'primo', true, 0);
+INSERT INTO foodapp.menu VALUES ('2016-12-16', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-16', 'contorno', true, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-16', 'contorno', false, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-16', 'dessert', true, 8);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-17', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-17', 'primo', true, 1);
+INSERT INTO foodapp.menu VALUES ('2016-12-17', 'secondo', false, 4);
+INSERT INTO foodapp.menu VALUES ('2016-12-17', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-17', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-17', 'dessert', true, 9);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-18', 'primo', true, 1);
+INSERT INTO foodapp.menu VALUES ('2016-12-18', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-18', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-18', 'contorno', false, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-18', 'dessert', true, 9);
+INSERT INTO foodapp.menu VALUES ('2016-12-18', 'dessert', false, 8);
+
+
+INSERT INTO foodapp.menu VALUES ('2016-12-19', 'primo', true, 1);
+INSERT INTO foodapp.menu VALUES ('2016-12-19', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-19', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-19', 'contorno', false, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-19', 'dessert', true, 9);
+INSERT INTO foodapp.menu VALUES ('2016-12-19', 'dessert', false, 8);
+
+
+INSERT INTO foodapp.menu VALUES ('2016-12-20', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-20', 'primo', true, 0);
+INSERT INTO foodapp.menu VALUES ('2016-12-20', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-20', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-20', 'contorno', false, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-20', 'dessert', true, 9);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-21', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-21', 'primo', true, 0);
+INSERT INTO foodapp.menu VALUES ('2016-12-21', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-21', 'contorno', true, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-21', 'contorno', false, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-21', 'dessert', true, 8);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-22', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-22', 'primo', true, 1);
+INSERT INTO foodapp.menu VALUES ('2016-12-22', 'secondo', false, 4);
+INSERT INTO foodapp.menu VALUES ('2016-12-22', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-22', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-22', 'dessert', true, 9);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-23', 'primo', true, 1);
+INSERT INTO foodapp.menu VALUES ('2016-12-23', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-23', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-23', 'contorno', false, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-23', 'dessert', true, 9);
+INSERT INTO foodapp.menu VALUES ('2016-12-23', 'dessert', false, 8);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-24', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-24', 'primo', true, 0);
+INSERT INTO foodapp.menu VALUES ('2016-12-24', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-24', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-24', 'contorno', false, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-24', 'dessert', true, 9);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-25', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-25', 'primo', true, 0);
+INSERT INTO foodapp.menu VALUES ('2016-12-25', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-25', 'contorno', true, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-25', 'contorno', false, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-25', 'dessert', true, 8);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-26', 'primo', true, 2);
+INSERT INTO foodapp.menu VALUES ('2016-12-26', 'primo', true, 1);
+INSERT INTO foodapp.menu VALUES ('2016-12-26', 'secondo', false, 4);
+INSERT INTO foodapp.menu VALUES ('2016-12-26', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-26', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-26', 'dessert', true, 9);
+
+INSERT INTO foodapp.menu VALUES ('2016-12-27', 'primo', true, 1);
+INSERT INTO foodapp.menu VALUES ('2016-12-27', 'secondo', true, 3);
+INSERT INTO foodapp.menu VALUES ('2016-12-27', 'contorno', true, 6);
+INSERT INTO foodapp.menu VALUES ('2016-12-27', 'contorno', false, 7);
+INSERT INTO foodapp.menu VALUES ('2016-12-27', 'dessert', true, 9);
+INSERT INTO foodapp.menu VALUES ('2016-12-27', 'dessert', false, 8);
+
+
 

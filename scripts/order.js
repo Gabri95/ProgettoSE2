@@ -303,9 +303,6 @@ function generateDishRow(dish, selectable) {
 }
 
 
-
-
-
 var dishView = {
     
     /**

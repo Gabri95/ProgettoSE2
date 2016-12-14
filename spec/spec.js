@@ -19,193 +19,9 @@ var base_url = "http://localhost:5000";
 *   N.B.: SI RACCOMANDA DI REINIZIALIZZARE IL DATABASE PRIMA DI ESEGUIRE IL TEST
 *   È POSSIBILE UTILIZZARE I COMANDI NEI FILE *.sql DISPONIBILI NELLA CARTELLA "db"
 */
+
+//UNIT TEST DEI MODULI
  
-describe("Test authentication: ", function() {
-    
-    it("on not logged user redirect to /start", function(done) {
-        request.get(
-            base_url, 
-            function(error, response, body) {
-				expect(response.request.href).toContain(base_url + "/start");
-                done();
-            });
-    }); 
-    
-    var client = requestJSON.createClient(base_url);
-    
-    describe("test login", function() {
-		
-        describe("on wrong username and password", function(){
-            var data = {username: 'gabri', password: 'wrong'};
-            it(" redirect to /start", function(done) {
-                client.post(base_url + "/login", data, 
-                    function(error, response, body) {
-                        expect(response.statusCode).toBe(302);
-                        expect(response.headers.location).toBe("/start");
-                        done();
-                    });
-            }); 
-        });
-        
-        
-        describe("on correct username and password", function(){
-            var data = {username: 'gabri', password: 'prova'};
-            it(" redirect to /", function(done) {
-                client.post(base_url + "/login", data, 
-                    function(error, response, body) {
-                        expect(response.statusCode).toBe(302);
-                        expect(response.headers.location).toBe("/home");
-                        done();
-                    });
-            }); 
-        });
-    
-    });
-    
-    describe("test logout", function() {
-		
-		
-		it(" redirect to /start", function(done) {
-			client.post(base_url + "/logout", null,
-				function(error, response, body) {
-                    expect(response.statusCode).toBe(302);
-                    expect(response.headers.location).toBe("/start");
-					done();
-				});
-		}); 
-        
-	});
-    
-    
-});
-
-
-describe("Test /getdish AJAX call: ", function() {
-    
-    var client = requestJSON.createClient(base_url);
-    
-    
-    
-    describe("on invalid parameters ", function() {
-		
-        describe("on invalid date", function(){
-            var data = {year: "2016", month: "12", day: "wrong", dish: "primo"};
-            it(" return empty lists", function(done) {
-                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish, 
-                    function(error, response, body) {
-                        expect(response.statusCode).toBe(200);
-                        expect(body).not.toBe(null);
-                        
-                        var data = body; 
-                    
-                        expect(data).not.toBeNull();
-                        expect(data.suggested).not.toBeNull();
-                        expect(data.alternatives).not.toBeNull();
-                        expect(data.suggested.length).toBe(0);
-                        expect(data.alternatives.length).toBe(0);
-                        done();
-                    });
-            }); 
-        });
-        
-        describe("on invalid dish", function(){
-            var data = {year: "2016", month: "12", day: "2", dish: "wrong"};
-            it(" return empty lists", function(done) {
-                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
-                    function(error, response, body) {
-                        expect(response.statusCode).toBe(200);
-                        expect(body).not.toBe(null);
-                        var data = body;
-                        expect(data).not.toBeNull();
-                        expect(data.suggested).not.toBeNull();
-                        expect(data.alternatives).not.toBeNull();
-                        expect(data.suggested.length).toBe(0);
-                        expect(data.alternatives.length).toBe(0);
-                        done();
-                    });
-            }); 
-        });
-        
-        describe("on missing dish", function(){
-            var data = {year: "2016", month: "12", day: "2"};
-            it(" return empty lists", function(done) {
-                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
-                    function(error, response, body) {
-                        expect(response.statusCode).toBe(200);
-                        expect(body).not.toBe(null);
-                        var data = body; 
-                        expect(data).not.toBeNull();
-                        expect(data.suggested).not.toBeNull();
-                        expect(data.alternatives).not.toBeNull();
-                        expect(data.suggested.length).toBe(0);
-                        expect(data.alternatives.length).toBe(0);
-                        done();
-                    });
-            }); 
-        });
-    
-    });
-    
-    describe("on correct parameters ", function() {
-		
-        describe("on inexisting menu", function(){
-            var data = {year: "2018", month: "12", day: "5", dish: "primo"};
-            it(" return empty lists", function(done) {
-                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
-                    function(error, response, body) {
-                        expect(response.statusCode).toBe(200);
-                        expect(body).not.toBe(null);
-                        var data = body; 
-                        expect(data).not.toBeNull();
-                        expect(data.suggested).not.toBeNull();
-                        expect(data.alternatives).not.toBeNull();
-                        expect(data.suggested.length).toBe(0);
-                        expect(data.alternatives.length).toBe(0);
-                        done();
-                    });
-            }); 
-        });
-        
-        describe("on existing menu", function(){
-            var data = {year: 2016, month: 12, day: 5, dish: "primo"};
-            it(" return non-empty lists", function(done) {
-                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
-                    function(error, response, body) {
-                        expect(response.statusCode).toBe(200);
-                        expect(body).not.toBeNull();
-                        var data = body;
-                        expect(data).not.toBeNull();
-                        expect(data.suggested).not.toBeNull();
-                        expect(data.alternatives).not.toBeNull();
-                        expect(data.suggested.length).toBe(2);
-                        expect(data.alternatives.length).toBe(0);
-                        
-                        
-                        var d0 = {id: 2, name: 'tortelli di zucca', description: 'Tipico piatto italiano'};
-                        var d1 = {id: 0, name: 'pasta al pomodoro', description: 'Tipico piatto italiano'};
-                        var s0 = data.suggested[0];
-                        var s1 = data.suggested[1];
-                    
-                        var check0 = (d0.id == s0.id && d0.name == s0.name && d0.description == s0.description) ||
-                                    (d0.id == s1.id && d0.name == s1.name && d0.description == s1.description);
-                        
-                        var check1 = (d1.id == s0.id && d1.name == s0.name && d1.description == s0.description) ||
-                                    (d1.id == s1.id && d1.name == s1.name && d1.description == s1.description);
-                        expect(check0).toBe(true);    
-                        expect(check1).toBe(true);    
-                        
-                        done();
-                    });
-            }); 
-        });
-        
-    
-    });
-    
-    
-});
-
-
 describe("Test sessionManager: ", function(){
     
     
@@ -249,7 +65,6 @@ describe("Test sessionManager: ", function(){
     
     
 });
-
 
 
 describe("Test ordersManager: ", function(){
@@ -454,7 +269,6 @@ describe("Test ordersManager: ", function(){
 });
 
 
-
 describe("Test menuManager: ", function(){
     
     
@@ -596,7 +410,6 @@ describe("Test menuManager: ", function(){
 });
 
 
-
 describe("Test dishesManager: ", function(){
     
     
@@ -629,3 +442,195 @@ describe("Test dishesManager: ", function(){
     
     
 });
+
+
+
+
+//TESTING DI ALCUNE API
+
+describe("Test authentication: ", function() {
+    
+    it("on not logged user redirect to /start", function(done) {
+        request.get(
+            base_url, 
+            function(error, response, body) {
+				expect(response.request.href).toContain(base_url + "/start");
+                done();
+            });
+    }); 
+    
+    var client = requestJSON.createClient(base_url);
+    
+    describe("test login", function() {
+		
+        describe("on wrong username and password", function(){
+            var data = {username: 'gabri', password: 'wrong'};
+            it(" redirect to /start", function(done) {
+                client.post(base_url + "/login", data, 
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(302);
+                        expect(response.headers.location).toBe("/start");
+                        done();
+                    });
+            }); 
+        });
+        
+        
+        describe("on correct username and password", function(){
+            var data = {username: 'gabri', password: 'prova'};
+            it(" redirect to /", function(done) {
+                client.post(base_url + "/login", data, 
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(302);
+                        expect(response.headers.location).toBe("/home");
+                        done();
+                    });
+            }); 
+        });
+    
+    });
+    
+    describe("test logout", function() {
+		
+		
+		it(" redirect to /start", function(done) {
+			client.post(base_url + "/logout", null,
+				function(error, response, body) {
+                    expect(response.statusCode).toBe(302);
+                    expect(response.headers.location).toBe("/start");
+					done();
+				});
+		}); 
+        
+	});
+    
+    
+});
+
+
+describe("Test /getdish AJAX call: ", function() {
+    
+    var client = requestJSON.createClient(base_url);
+    
+    
+    
+    describe("on invalid parameters ", function() {
+		
+        describe("on invalid date", function(){
+            var data = {year: "2016", month: "12", day: "wrong", dish: "primo"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish, 
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        
+                        var data = body; 
+                    
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+        
+        describe("on invalid dish", function(){
+            var data = {year: "2016", month: "12", day: "2", dish: "wrong"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        var data = body;
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+        
+        describe("on missing dish", function(){
+            var data = {year: "2016", month: "12", day: "2"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        var data = body; 
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+    
+    });
+    
+    describe("on correct parameters ", function() {
+		
+        describe("on inexisting menu", function(){
+            var data = {year: "2018", month: "12", day: "5", dish: "primo"};
+            it(" return empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBe(null);
+                        var data = body; 
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(0);
+                        expect(data.alternatives.length).toBe(0);
+                        done();
+                    });
+            }); 
+        });
+        
+        describe("on existing menu", function(){
+            var data = {year: 2016, month: 12, day: 5, dish: "primo"};
+            it(" return non-empty lists", function(done) {
+                client.get(base_url + "/getdish?day=" + data.day + "&month=" + data.month + "&year=" + data.year + "&dish=" + data.dish,
+                    function(error, response, body) {
+                        expect(response.statusCode).toBe(200);
+                        expect(body).not.toBeNull();
+                        var data = body;
+                        expect(data).not.toBeNull();
+                        expect(data.suggested).not.toBeNull();
+                        expect(data.alternatives).not.toBeNull();
+                        expect(data.suggested.length).toBe(2);
+                        expect(data.alternatives.length).toBe(0);
+                        
+                        
+                        var d0 = {id: 2, name: 'tortelli di zucca', description: 'Tipico piatto italiano'};
+                        var d1 = {id: 0, name: 'pasta al pomodoro', description: 'Tipico piatto italiano'};
+                        var s0 = data.suggested[0];
+                        var s1 = data.suggested[1];
+                    
+                        var check0 = (d0.id == s0.id && d0.name == s0.name && d0.description == s0.description) ||
+                                    (d0.id == s1.id && d0.name == s1.name && d0.description == s1.description);
+                        
+                        var check1 = (d1.id == s0.id && d1.name == s0.name && d1.description == s0.description) ||
+                                    (d1.id == s1.id && d1.name == s1.name && d1.description == s1.description);
+                        expect(check0).toBe(true);    
+                        expect(check1).toBe(true);    
+                        
+                        done();
+                    });
+            }); 
+        });
+        
+    
+    });
+    
+    
+});
+
+

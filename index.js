@@ -1,11 +1,3 @@
-//connect DB
-var pg = require('pg');
-
-//Impostata la variabile contente l'indirizzo online del database. Sono aggiunti i parametri necessari per poter permettere la connessione ad esso.
-process.env.DATABASE_URL = process.env.DATABASE_URL + '?ssl=true&sslfactory=org.postgresql.ssl.NonValidatingFactory';
-console.log(process.env.DATABASE_URL);
-
-
 //importazione dei moduli esterni necessari
 var sessionManager = require("./sessionManager.js");
 var menuManager = require("./menuManager.js");

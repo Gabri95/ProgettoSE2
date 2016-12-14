@@ -12,3 +12,9 @@ dopo aver impostato il parametro DATABASE_URL di heroku (sotto config) a:
 Anche per poter eseguire i test con jasmine sarà necessario specificare il DATABASE_URL come sopra. Pertanto, andrà lanciato il comando:
 	DATABASE_URL=$(heroku config:get DATABASE_URL) node_modules/jasmine/bin/jasmine.js
 
+Gli utenti inseriti attualmente sono (username, password):
+
+    - 'gabri', 'prova'
+    - 'pinco', 'prova'
+    - 'mario', 'password'
+    

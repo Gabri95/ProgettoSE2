@@ -6,13 +6,6 @@
 		<link rel="stylesheet" href="http://code.jquery.com/ui/1.11.4/themes/redmond/jquery-ui.css">
         
         <link rel="stylesheet" href="/styles/style.css">
-		
-		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-        
-		<!-- Inclusione dello script JavaScript che implementa le funzionalità necessarie al funzionamento della pagina-->
-		<script src = "/scripts/order.js" type = "text/javascript"></script>
-        
-        
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
 		<title>Settimana</title>
@@ -91,7 +84,7 @@
             </div>
             
             
-            <div class="container-fluid" id ="resumeView" style="display: none;">
+            <div class="container-fluid" id ="resumeView">
                 <div class="row">
                     <div class="panel">
                         <div class="panel-heading">
@@ -138,6 +131,11 @@
             </div>
         </div>
         
+        
+        <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        
+        <!-- Inclusione dello script JavaScript che implementa le funzionalità necessarie al funzionamento della pagina-->
+		<script src = "/scripts/order.js" type = "text/javascript"></script>
         
         (: day ~
             <script>   

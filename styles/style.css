@@ -167,13 +167,14 @@
 }
 
 .choice_list {
-    min-height: 100px;
+    min-height: 116px;
     padding: 5% 1%;
     background-color: #951F00;
 }
 
 .ordine {
     padding: 0% 1%;
+    display: none;
 }
 
 .ordine .tumbnail {
@@ -193,6 +194,17 @@
     border-radius: 3px;
 }
 
+.alternativa {
+    display: none;
+}
+
+#suggestedDishes{
+    display: none;
+}
+
+#resumeView{
+    display: none;
+}
 
 .centeredButton {
     text-align: center;

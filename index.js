@@ -381,7 +381,7 @@ app.get('/day', sessionManager.isLogged, function (request, response) {
                                             t_1: days[3],
                                             t_2: days[4],
                                             suggested: menu,
-                                            can_order: (utility.followingDay(new Date(), ordersManager.DAY_LIMIT) <= day)
+                                            can_order: (utility.followingDay(new Date(), ordersManager.DAY_LIMIT) <= date)
                                         },
                                         function (d) {
                                             //write response

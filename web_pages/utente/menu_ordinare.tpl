@@ -8,11 +8,9 @@
         <link rel="stylesheet" href="/styles/style.css">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0">
 		
-		<title>Settimana</title>
+		<title>Ordina</title>
 	</head>
 	<body>
-		
-		
 		<div class="container col-md-4 col-md-offset-4">
 			(:file ~ ./web_pages/utente/header.tpl:)
 			
@@ -49,11 +47,9 @@
                         </div>
                     </div>
                 </div>
-                
             </div>
             
             <div class="container-fluid dishesView">
-				
                 <div class="row">
                     <div class="panel" id="menu">
                         <div class="panel-heading">

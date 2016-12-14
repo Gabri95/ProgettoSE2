@@ -241,8 +241,10 @@ function getMenuDish(date, dish, callback) {
                         alternatives: []
                     });
                 } else {
-                    client.query('SELECT P.dish_id as id, P.suggested as suggested, D.name as name, D.description as description \
-                              FROM (SELECT dish_id, suggested FROM foodapp.menu WHERE date = $1 AND dish = $2) as P JOIN foodapp.dishes D ON (P.dish_id = D.id)', [date, dish],
+                    client.query('SELECT P.dish_id as id, P.suggested as suggested, D.name as name ' +
+                                 'FROM (SELECT dish_id, suggested FROM foodapp.menu WHERE date = $1 AND dish = $2) as P '+
+                                    'JOIN foodapp.dishes D ON (P.dish_id = D.id)', 
+                                 [date, dish],
                         function (err, result) {
                             //release the client back to the pool
                             done();
@@ -268,14 +270,12 @@ function getMenuDish(date, dish, callback) {
                                     if (suggested) {
                                         menu.suggested.push({
                                             id: d.id,
-                                            name: d.name,
-                                            description: d.description
+                                            name: d.name
                                         });
                                     } else {
                                         menu.alternatives.push({
                                             id: d.id,
-                                            name: d.name,
-                                            description: d.description
+                                            name: d.name
                                         });
                                     }
                                 }

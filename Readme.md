@@ -18,3 +18,10 @@ Anche per poter eseguire i test con jasmine sarà necessario specificare il DATA
 
 È possibile trovare al seguente indirizzo il documento di code review insieme ai file ai quali si riferisce:
     https://drive.google.com/drive/folders/0B_rqFnxIXgjCdjZXVzdHY1N4eEk?usp=sharing
+    
+Gli utenti inseriti attualmente sono (username, password):
+
+    - 'gabri', 'prova'
+    - 'pinco', 'prova'
+    - 'mario', 'password'
+    

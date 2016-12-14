@@ -614,11 +614,11 @@ describe("Test /getdish AJAX call: ", function() {
                         var s0 = data.suggested[0];
                         var s1 = data.suggested[1];
                     
-                        var check0 = (d0.id == s0.id && d0.name == s0.name && d0.description == s0.description) ||
-                                    (d0.id == s1.id && d0.name == s1.name && d0.description == s1.description);
+                        var check0 = (d0.id == s0.id && d0.name == s0.name) ||
+                                    (d0.id == s1.id && d0.name == s1.name);
                         
-                        var check1 = (d1.id == s0.id && d1.name == s0.name && d1.description == s0.description) ||
-                                    (d1.id == s1.id && d1.name == s1.name && d1.description == s1.description);
+                        var check1 = (d1.id == s0.id && d1.name == s0.name) ||
+                                    (d1.id == s1.id && d1.name == s1.name);
                         expect(check0).toBe(true);    
                         expect(check1).toBe(true);    
                         

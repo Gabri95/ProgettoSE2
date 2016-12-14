@@ -11,3 +11,10 @@ L'applicazione si può trovare al seguente indirizzo:
     
 In questo branch (master) è presente la versione "pulita" presente anche su heroku.
 Nel branch "complete", invece, il codice contiene una parte iniziale necessaria ad eseguire l'applicazione in locale (dato che è necessario conoscere l'url del database, che in heroku viene impostato in automatico in DATABASE_URL).
+
+Gli utenti inseriti attualmente sono (username, password):
+
+    - 'gabri', 'prova'
+    - 'pinco', 'prova'
+    - 'mario', 'password'
+    
